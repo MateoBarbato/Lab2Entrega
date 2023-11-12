@@ -17,6 +17,18 @@ def errMsg(err:str):
 def cleanScreen(screen):
     screenBackroundRect = pygame.Rect(0,0,SCREENWIDTH,SCREENHEIGHT)
     screen.fill(BLACK,screenBackroundRect)
+
+def drawBackground(screen:pygame.display,image:str='fondo.png'):
+    screenBackroundRect = pygame.Rect(0,0,SCREENWIDTH,SCREENHEIGHT)
+    try:
+        fondo = pygame.image.load(rf'assets/{image}')
+        fondo = pygame.transform.scale(fondo,(SCREENWIDTH,SCREENHEIGHT))
+        
+    except FileNotFoundError as e:
+        errMsg(e)
+        errMsg('Error loading the backgorund, black backround instead')
+        # screen.fill(BLACK,screenBackroundRect)
+    screen.blit(fondo,screenBackroundRect)
     pygame.display.flip()
 
 def waitUser ():
@@ -29,19 +41,20 @@ def waitUser ():
                 if event.key == pygame.K_ESCAPE:
                     print('See ya laater lucass')
                     sys.exit()
+                if event.key == pygame.K_SPACE:
+                    sys.exit()
                 return
 
-def waitUserClick (screen,muteState):
+def mainMenu (screen,muteValue:bool):
+    drawBackground(screen)
     menuState = 'main'
-    muteState = muteState
-
-    ButtonStart = Button(BLACK,120,120,(SCREENWIDTH-120)/2,(SCREENHEIGHT-120*5),'Start',screen)
+    ButtonStart = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH-BUTTONWIDTH)/2,(0+BUTTONHEIGHT*2),'Start',screen)
     ButtonStart.CreateButtonMenu(screen)
-    ButtonOptions = Button(BLACK,120,120,(SCREENWIDTH-120)/2,(SCREENHEIGHT-120)/2,'Options',screen)
+    ButtonOptions = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH-BUTTONWIDTH)/2,(SCREENHEIGHT-BUTTONHEIGHT)/2,'Options',screen)
     ButtonOptions.CreateButtonMenu(screen)
-    ButtonExit = Button(BLACK,120,120,(SCREENWIDTH-120)/2,(SCREENHEIGHT-120*2.5),'Exit',screen)
+    ButtonExit = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH-BUTTONWIDTH)/2,(SCREENHEIGHT-BUTTONHEIGHT*3),'Exit',screen)
     ButtonExit.CreateButtonMenu(screen)
-
+    pygame.display.flip()
     while menuState == 'main':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -52,49 +65,65 @@ def waitUserClick (screen,muteState):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if event.button == 1:
-                    if ButtonStart.rect.collidepoint(pos[0],pos[1]):
-                        print('a juegar')
-                        return muteState
-                    if ButtonOptions.rect.collidepoint(pos[0],pos[1]):
-                        menuState = 'options'
+                    if ButtonStart.buttonPressed():
+                        print(muteValue)
+                        return muteValue
+                    if ButtonOptions.buttonPressed():
+                        optionMenu(screen,muteValue)
                         break
-                    if ButtonExit.rect.collidepoint(pos[0],pos[1]):
+                    if ButtonExit.buttonPressed():
                         exit()
 
-    ButtonBack = Button(BLACK,120,120,(SCREENWIDTH-120)/2,(SCREENHEIGHT-120*5),'Back',screen)
-    ButtonBack.CreateButtonMenu(screen)
-    ButtonCredits = Button(BLACK,120,120,(SCREENWIDTH-120)/2,(SCREENHEIGHT-120*2.5),'Credits',screen)
-    ButtonCredits.CreateButtonMenu(screen)
-    while menuState == 'options':
-        if muteState == False:
-            # cleanScreen(screen)
-            ButtonMute = Button(BLACK,120,120,(SCREENWIDTH-120)/2,(SCREENHEIGHT-120)/2,'Mute Off',screen)
-            ButtonMute.CreateButtonMenu(screen,GREEN,LAVENDER)
-        else:
-            # cleanScreen(screen)
-            ButtonMute = Button(BLACK,120,120,(SCREENWIDTH-120)/2,(SCREENHEIGHT-120)/2,'Muted On',screen)
-            ButtonMute.CreateButtonMenu(screen,RED,LAVENDER)
+def optionMenu(screen,muteValue:bool):
+        muteValue = muteValue 
+        drawBackground(screen)
+        ButtonBack = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH-BUTTONWIDTH)/2,(0+BUTTONHEIGHT*2),'Back',screen)
+        ButtonBack.CreateButtonMenu(screen)
+        ButtonCredits = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH-BUTTONWIDTH)/2,(SCREENHEIGHT-BUTTONHEIGHT*3),'Credits',screen)
+        ButtonCredits.CreateButtonMenu(screen)
         pygame.display.flip()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                    exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                if event.button == 1:
-                    if ButtonBack.buttonPressed():
-                        menuState = 'main'
-                        break
-                    if ButtonMute.rect.collidepoint(pos[0],pos[1]):
-                        muteState = not muteState
-                        # OBTENGO EL TAMAÑO DEL BOTON A BORRAR Y LO PINTO, AL SALIR DEL LOOP SE VUEVLEN A PINTAR VALIDANDO EL ESTADO DEL MUTE
-                        ButtonMuteSurface = pygame.Surface(ButtonMute.rect.size)
-                        ButtonMuteSurface.fill(BLACK)
-                        break
-                    if ButtonCredits.rect.collidepoint(pos[0],pos[1]):
-                        # drawCredits()
-                        print('asd')
+        while True:
+            if muteValue == False or muteValue == None:
+                ButtonMute = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH-BUTTONWIDTH)/2,(SCREENHEIGHT-BUTTONHEIGHT)/2,'Mute Off',screen)
+                ButtonMute.CreateButtonMenu(screen,BLACK,LAVENDER)
+                pygame.display.flip()
+            else:
+                ButtonMute = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH-BUTTONWIDTH)/2,(SCREENHEIGHT-BUTTONHEIGHT)/2,'Mute On',screen)
+                ButtonMute.CreateButtonMenu(screen,RED,LAVENDER)
+                pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                        exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        if ButtonBack.buttonPressed():
+                            mainMenu(screen,muteValue)
+                            return
+                        if ButtonMute.buttonPressed():
+                            muteValue = not muteValue
+                        if ButtonCredits.buttonPressed():
+                            creditsMenu(screen,muteValue)
+                            print('asd')
+
+def creditsMenu(screen,muteValue:bool):
+        drawBackground(screen,'fondoMarDia.png')
+        ButtonBack = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT-20,(SCREENWIDTH-BUTTONWIDTH)/8,(SCREENHEIGHT-BUTTONHEIGHT*1.5),'Back',screen)
+        ButtonBack.CreateButtonMenu(screen,WHITE,INDIGO)
         pygame.display.flip()
-    cleanScreen(screen)
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                        exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    if event.button == 1:
+                        if ButtonBack.buttonPressed():
+                            optionMenu(screen,muteValue)
+                            return

@@ -24,10 +24,10 @@ class Button:
     
     def CreateButtonMenu(self,screen,color=BLACK,background=LAVENDER):
         self.setFontSize(35)
-        text = self.font.render(self.text,True,color,background)
-        textRect = text.get_rect(center=(self.rect.centerx,self.rect.centery))
-        screen.blit(text,textRect)
-        pygame.display.flip()
+        text = self.font.render(self.text,True,color)
+        centerOfRect = text.get_rect(center=(self.rect.centerx,self.rect.centery))
+        pygame.draw.rect(screen,background,self.rect,border_radius=5)
+        screen.blit(text,centerOfRect)
 
 
     def buttonPressed (self):

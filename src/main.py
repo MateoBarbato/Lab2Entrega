@@ -1,8 +1,11 @@
 import pygame
-from helpers import errMsg,waitUser,waitUserClick
+from helpers import *
 from Config import *
 from colors import *
-from models.Button import Button
+
+# Loading assets
+
+
 
 # Flags
 menu = 'main'
@@ -15,20 +18,18 @@ clock.tick(60)
 
 try :
     screen = pygame.display.set_mode(SCREENSIZE)
+    screen.fill(WHITE,pygame.Rect(0,0,SCREENWIDTH,SCREENHEIGHT))
     pygame.display.set_caption("PokeBug")
+    drawBackground(screen,'fondo.png')
 except pygame.error as e:
     errMsg(e)
+# cleanScreen(screen)
 
-screenBackroundRect = pygame.Rect(0,0,SCREENWIDTH,SCREENHEIGHT)
-screen.fill(BLACK,screenBackroundRect)
 while True:
-   muteState = waitUserClick(screen,muteState)
+    
 
-# MENU DE OPCIONES
-
+   muteState = mainMenu(screen,muteState)
 
     # while gameRunning:
     #     break
-    # break
 
-print('assd')
