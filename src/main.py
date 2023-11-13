@@ -102,7 +102,7 @@ while True:
                 bug.moveRandom(25)
             bug.blitBug()
         moveBugs=False
-
+  
 
         # "Gravity"
         # if player.rect.bottom < SCREENHEIGHT:
