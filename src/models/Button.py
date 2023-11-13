@@ -13,6 +13,8 @@ class Button:
         self.y = y
         self.font = self.setFontSize(20)
         self.rect : pygame.Rect = pygame.Rect(x,y,self.width,self.height)
+        self.rect.centerx = x
+        self.rect.centery = y
         self.screen : pygame.display = screen
 
     def drawRect(self,color,screen):
@@ -22,11 +24,11 @@ class Button:
     def setFontSize(self,size=20) :
         self.font = pygame.font.SysFont("monospace",size)
     
-    def CreateButtonMenu(self,screen,color=BLACK,background=LAVENDER):
+    def CreateButtonMenu(self,screen,color=BLACK,background=LAVENDER,borderRadius=5):
         self.setFontSize(35)
         text = self.font.render(self.text,True,color)
         centerOfRect = text.get_rect(center=(self.rect.centerx,self.rect.centery))
-        pygame.draw.rect(screen,background,self.rect,border_radius=5)
+        pygame.draw.rect(screen,background,self.rect,border_radius=borderRadius)
         screen.blit(text,centerOfRect)
 
 
