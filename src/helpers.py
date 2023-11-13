@@ -16,24 +16,33 @@ def errMsg(err:str):
     print(err)
     print("")
 
-def randIntPos(axis):
+def randIntPos(axis,axisSize):
     if axis=='x':
-       return randint(0,SCREENWIDTH)
+       return randint(0,SCREENWIDTH-axisSize)
     else:
-        return randint(0,SCREENHEIGHT)
+        return randint(0,SCREENHEIGHT-axisSize)
 
 def cleanScreen(screen):
     screenBackroundRect = pygame.Rect(0,0,SCREENWIDTH,SCREENHEIGHT)
     screen.fill(BLACK,screenBackroundRect)
 
+def loadImage(image:str):
+    try:
+        imgToLoad = pygame.image.load(f'assets/{image}')
+        return imgToLoad
+    except FileNotFoundError as e:
+        errMsg(e)
+        errMsg('Error loading an image, exiting...')
+        exit()
+
 def loadBackground(image:str='fondoMarDia.png'):
     try:
-        background = pygame.image.load(rf'assets/{image}')
+        background = pygame.image.load(f'assets/{image}')
         background = pygame.transform.scale(background,(SCREENWIDTH,SCREENHEIGHT))
         return background
     except FileNotFoundError as e:
         errMsg(e)
-        errMsg('Error loading the backgorund, black backround instead')
+        errMsg('Error loading the backgorund, exiting...')
         exit()
 
 def drawBackground(screen:pygame.display,background):
@@ -122,11 +131,19 @@ def creditsMenu(screen,muteValue:bool):
         background = loadBackground('fondoMarNoche.png')
         drawBackground(screen,background)
         muteValue = muteValue if muteValue !=None else False
+
         ButtonBack = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT-20,(BUTTONWIDTH),(SCREENHEIGHT-BUTTONHEIGHT*1.5),'Back',screen)
         ButtonBack.CreateButtonMenu(screen,BLACK,LAVENDER,borderRadius=8)
 
         ButtonExit = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT-20,(SCREENWIDTH-BUTTONWIDTH),(SCREENHEIGHT-BUTTONHEIGHT*1.5),'Exit',screen)
         ButtonExit.CreateButtonMenu(screen,BLACK,LAVENDER,borderRadius=8)
+
+        copywriteImg = loadImage('gameFreak.png')
+        # copywriteImg = pygame.transform.scale(copywriteImg,(2,140))
+        copyImgRect = copywriteImg.get_rect()
+        copyImgRect = copywriteImg.get_rect(center=(copyImgRect.centerx,copyImgRect.centery))
+        copyImgRect.center = (((SCREENWIDTH / 2),(0+BUTTONHEIGHT*3)))
+        screen.blit(copywriteImg,copyImgRect)
 
         Text('Juego creado por Mateo Barbato',WHITE,24,False).blitText(screen,(SCREENWIDTH/2,SCREENHEIGHT/2.5),None)
         Text('Idea originada con Pokemon dandole una vuelta creativa',WHITE,24,False).blitText(screen,(SCREENWIDTH/2,SCREENHEIGHT/2.25),None)

@@ -46,7 +46,7 @@ except pygame.error as e:
 
 while True:
     player = Player(playerImg,SCREENWIDTH/2,SCREENHEIGHT/2,50,50,screen)
-    bugs.append(Bug(bugImg,randIntPos('x'),randIntPos('y'),60,60,screen))
+    bugs.append(Bug(bugImg,randIntPos('x',60),randIntPos('y',60),60,60,screen))
     # bug = Bug(bugImg,randIntPos('x'),randIntPos('y'),60,60,screen)
     muteState = mainMenu(screen,muteState)
     gameRunning = True
@@ -94,7 +94,7 @@ while True:
         if createBug:
             if len(bugs) < 8:
                 print(len(bugs))
-                bugs.append(Bug(bugImg,randIntPos('x'),randIntPos('y'),60,60,screen))
+                bugs.append(Bug(bugImg,randIntPos('x',60),randIntPos('y',60),60,60,screen))
             createBug=False
 
         for bug in bugs[:]:
@@ -103,7 +103,7 @@ while True:
             bug.blitBug()
         moveBugs=False
 
-        
+
         # "Gravity"
         # if player.rect.bottom < SCREENHEIGHT:
         #     if player.speedY == 0:
