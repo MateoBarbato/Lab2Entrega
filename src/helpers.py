@@ -1,3 +1,4 @@
+from random import randint
 import pygame
 import sys
 from models.Button import Button
@@ -15,22 +16,29 @@ def errMsg(err:str):
     print(err)
     print("")
 
+def randIntPos(axis):
+    if axis=='x':
+       return randint(0,SCREENWIDTH)
+    else:
+        return randint(0,SCREENHEIGHT)
+
 def cleanScreen(screen):
     screenBackroundRect = pygame.Rect(0,0,SCREENWIDTH,SCREENHEIGHT)
     screen.fill(BLACK,screenBackroundRect)
 
-def drawBackground(screen:pygame.display,image:str='fondo.png'):
-    screenBackroundRect = pygame.Rect(0,0,SCREENWIDTH,SCREENHEIGHT)
+def loadBackground(image:str='fondoMarDia.png'):
     try:
-        fondo = pygame.image.load(rf'assets/{image}')
-        fondo = pygame.transform.scale(fondo,(SCREENWIDTH,SCREENHEIGHT))
-        
+        background = pygame.image.load(rf'assets/{image}')
+        background = pygame.transform.scale(background,(SCREENWIDTH,SCREENHEIGHT))
+        return background
     except FileNotFoundError as e:
         errMsg(e)
         errMsg('Error loading the backgorund, black backround instead')
-        screen.fill(BLACK,screenBackroundRect)
-    screen.blit(fondo,screenBackroundRect)
-    pygame.display.flip()
+        exit()
+
+def drawBackground(screen:pygame.display,background):
+    screenBackroundRect = pygame.Rect(0,0,SCREENWIDTH,SCREENHEIGHT)
+    screen.blit(background,screenBackroundRect)
 
 def waitUser ():
     while True:
@@ -47,7 +55,9 @@ def waitUser ():
                 return
 
 def mainMenu (screen,muteValue:bool):
-    drawBackground(screen)
+    background = loadBackground()
+    drawBackground(screen,background)
+    muteValue = muteValue if muteValue !=None else False
     menuState = 'main'
     ButtonStart = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH)/2,(BUTTONHEIGHT*3),'Start',screen)
     ButtonStart.CreateButtonMenu(screen)
@@ -70,27 +80,26 @@ def mainMenu (screen,muteValue:bool):
                         return muteValue
                     if ButtonOptions.buttonPressed():
                         optionMenu(screen,muteValue)
-                        break
+                        return
                     if ButtonExit.buttonPressed():
                         exit()
 
 def optionMenu(screen,muteValue:bool):
-        muteValue = muteValue 
-        drawBackground(screen)
+        muteValue = muteValue if muteValue !=None else False
+        background = loadBackground()
+        drawBackground(screen,background)
         ButtonBack = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH)/2,(BUTTONHEIGHT*3),'Back',screen)
         ButtonBack.CreateButtonMenu(screen)
         ButtonCredits = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH)/2,(SCREENHEIGHT-BUTTONHEIGHT*3),'Credits',screen)
         ButtonCredits.CreateButtonMenu(screen)
-        pygame.display.flip()
         while True:
             if muteValue == False or muteValue == None:
                 ButtonMute = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH)/2,(SCREENHEIGHT)/2,'Mute Off',screen)
                 ButtonMute.CreateButtonMenu(screen,BLACK,LAVENDER)
-                pygame.display.flip()
             else:
                 ButtonMute = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT,(SCREENWIDTH)/2,(SCREENHEIGHT)/2,'Mute On',screen)
                 ButtonMute.CreateButtonMenu(screen,RED,LAVENDER)
-                pygame.display.flip()
+            pygame.display.flip()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -107,20 +116,21 @@ def optionMenu(screen,muteValue:bool):
                             muteValue = not muteValue
                         if ButtonCredits.buttonPressed():
                             creditsMenu(screen,muteValue)
-                            print('asd')
-
+                            return
+                        
 def creditsMenu(screen,muteValue:bool):
-        drawBackground(screen,'fondoMarDia.png')
-
+        background = loadBackground('fondoMarNoche.png')
+        drawBackground(screen,background)
+        muteValue = muteValue if muteValue !=None else False
         ButtonBack = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT-20,(BUTTONWIDTH),(SCREENHEIGHT-BUTTONHEIGHT*1.5),'Back',screen)
-        ButtonBack.CreateButtonMenu(screen,BLACK,PURPLE,borderRadius=8)
+        ButtonBack.CreateButtonMenu(screen,BLACK,LAVENDER,borderRadius=8)
 
         ButtonExit = Button(BLACK,BUTTONWIDTH,BUTTONHEIGHT-20,(SCREENWIDTH-BUTTONWIDTH),(SCREENHEIGHT-BUTTONHEIGHT*1.5),'Exit',screen)
-        ButtonExit.CreateButtonMenu(screen,BLACK,PURPLE,borderRadius=8)
+        ButtonExit.CreateButtonMenu(screen,BLACK,LAVENDER,borderRadius=8)
 
-        Text('Juego creado por Mateo Barbato',WHITE,24).blitText(screen,(SCREENWIDTH/2,SCREENHEIGHT/2.5),BLACK,None)
-        Text('Idea originada con Pokemon dandole una vuelta creativa',WHITE,24).blitText(screen,(SCREENWIDTH/2,SCREENHEIGHT/2.25),BLACK,None)
-        Text('Assets obtenidos de la pagina Sprite Database',WHITE,24).blitText(screen,(SCREENWIDTH/2,SCREENHEIGHT/2),BLACK,None)
+        Text('Juego creado por Mateo Barbato',WHITE,24,False).blitText(screen,(SCREENWIDTH/2,SCREENHEIGHT/2.5),None)
+        Text('Idea originada con Pokemon dandole una vuelta creativa',WHITE,24,False).blitText(screen,(SCREENWIDTH/2,SCREENHEIGHT/2.25),None)
+        Text('Assets obtenidos de la pagina Sprite Database',WHITE,24,False).blitText(screen,(SCREENWIDTH/2,SCREENHEIGHT/2),None)
 
         pygame.display.flip()
         while True:
