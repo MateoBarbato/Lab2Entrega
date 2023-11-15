@@ -2,10 +2,12 @@ import pygame
 from colors import *
 from Config import *
 
+pygame.font.init()
+
 
 class Button:
     def __init__(self, width, height, x, y, text, screen,  colorbackground=LAVENDER, colorText=BLACK, fontSize=20) -> None:
-        pygame.font.init()
+
         self.colorbackground = colorbackground
         self.width = width
         self.height = height
@@ -24,7 +26,7 @@ class Button:
                          self.rect, border_radius=borderRadius)
         pygame.display.flip()
 
-    def setFont(self, size=20, fontFamily='monospace', bold=False, italic=False):
+    def setFont(self, size=20, fontFamily='Open Sans', bold=False, italic=False):
         self.font = pygame.font.SysFont(fontFamily, size, bold, italic)
 
     def CreateButtonMenu(self, screen, background=LAVENDER, borderRadius=10):

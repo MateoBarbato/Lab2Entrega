@@ -47,9 +47,9 @@ except pygame.error as e:
 
 while True:
     player = Player(playerImg.convert_alpha(), SCREENWIDTH /
-                    2, SCREENHEIGHT/2, 50, 50, screen)
-    bugs.append(Bug(bugImg, randIntPos('x', 60),
-                randIntPos('y', 60), 60, 60, screen))
+                    2, SCREENHEIGHT/2, 60, 60, screen)
+    # bugs.append(Bug(bugImg, randIntPos('x', 60),
+    #             randIntPos('y', 60), 60, 60, screen))
 
     muteState = mainMenu(screen, muteState)
     levelSelector(screen)
@@ -79,6 +79,12 @@ while True:
                     cheatOn = not cheatOn
                 if event.key == pygame.K_k:
                     pass
+                if event.key == pygame.K_w:
+                    if player.jumping == False:
+                        player.jump(True)
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_w:
+                    player.jump(False)
             if event.type == pygame.USEREVENT+1:
                 moveBugs = True
             if event.type == pygame.USEREVENT+2:
@@ -90,15 +96,17 @@ while True:
 
         if player:
             player.blitPlayer()
+            player.update()
             if powerUp1:
-                player.movePlayer(8)
+                player.setPlayerSpeed(5)
             else:
-                player.movePlayer(4)
+                player.setPlayerSpeed(2)
 
         if createBug:
             if len(bugs) < 8:
-                bugs.append(Bug(bugImg, randIntPos('x', 60),
-                            randIntPos('y', 60), 60, 60, screen))
+                pass
+                # bugs.append(Bug(bugImg, randIntPos('x', 60),
+                #             randIntPos('y', 60), 60, 60, screen))
             createBug = False
 
         for bug in bugs[:]:

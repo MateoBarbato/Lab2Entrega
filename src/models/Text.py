@@ -8,15 +8,16 @@ pygame.font.init()
 
 class Text:
 
-    def __init__(self, text, color, fontSize, anitalisaing) -> None:
+    def __init__(self, text, color, fontSize, anitalisaing, fontFamily='Open Sans') -> None:
         self.text = text
         self.color = color
         self.fontSize = fontSize
-        self.font = pygame.font.SysFont("monospace", fontSize)
+        self.fontFamily = fontFamily
+        self.font = pygame.font.SysFont(self.fontFamily, fontSize)
         self.anitalisaing = anitalisaing
 
     def setFontSize(self, size=20):
-        self.font = pygame.font.SysFont("monospace", size)
+        self.font = pygame.font.SysFont(self.fontFamily, size)
 
     def setText(self, text):
         self.text = text

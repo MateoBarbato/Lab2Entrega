@@ -1,3 +1,4 @@
+from ast import main
 from random import randint
 import secrets
 from turtle import color
@@ -182,7 +183,7 @@ def levelSelector(screen):
 
     Level1 = Button(120, 120, SCREENWIDTH/2,
                     SCREENHEIGHT/3, 'Level 1', screen,)
-    # Level1.CreateButtonMenu()
+    Level1.CreateButtonMenu(screen)
     pygame.display.flip()
     while True:
         for event in pygame.event.get():
@@ -194,11 +195,11 @@ def levelSelector(screen):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if event.button == 1:
-                    # if ButtonStart.buttonPressed():
-                    #     # enviar al usuario al level selector
-                    #     break
-                    #     # return muteValue
+                    if Level1.buttonPressed():
+                        # enviar al usuario al level selector
+                        return
+
                     # if ButtonOptions.buttonPressed():
                     #     return
                     if ButtonExit.buttonPressed():
-                        exit()
+                        mainMenu(screen, False)
