@@ -9,11 +9,12 @@ pygame.init()
 clock = pygame.time.Clock()
 clock.tick(60)
 
-# Timers 
+# Timers
 # Flags
 menu = 'main'
 gameRunning = True
-muteState = False
+# muteState = False
+muteState = MUTESTATE
 powerUp1 = False
 cheatOn = False
 moveBugs = None
@@ -37,25 +38,28 @@ except FileNotFoundError:
     exit()
 background = loadBackground('fondo.png')
 
-try :
+try:
     screen = pygame.display.set_mode(SCREENSIZE)
-    screen.fill(WHITE,pygame.Rect(0,0,SCREENWIDTH,SCREENHEIGHT))
+    screen.fill(WHITE, pygame.Rect(0, 0, SCREENWIDTH, SCREENHEIGHT))
     pygame.display.set_caption("PokeBug")
 except pygame.error as e:
     errMsg(e)
 
 while True:
-    player = Player(playerImg,SCREENWIDTH/2,SCREENHEIGHT/2,50,50,screen)
-    bugs.append(Bug(bugImg,randIntPos('x',60),randIntPos('y',60),60,60,screen))
-    # bug = Bug(bugImg,randIntPos('x'),randIntPos('y'),60,60,screen)
-    muteState = mainMenu(screen,muteState)
+    player = Player(playerImg.convert_alpha(), SCREENWIDTH /
+                    2, SCREENHEIGHT/2, 50, 50, screen)
+    bugs.append(Bug(bugImg, randIntPos('x', 60),
+                randIntPos('y', 60), 60, 60, screen))
+
+    muteState = mainMenu(screen, muteState)
+    levelSelector(screen)
     gameRunning = True
     moveBugs = False
     pygame.time.set_timer(moveBugEvent, moveBugInterval)
     pygame.time.set_timer(createBugEvent, createBugInterval)
-    while gameRunning:  
+    while gameRunning:
         # BLIT ZONE
-        drawBackground(screen,background)
+        drawBackground(screen, background)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -90,28 +94,17 @@ while True:
                 player.movePlayer(8)
             else:
                 player.movePlayer(4)
-        
+
         if createBug:
             if len(bugs) < 8:
-                print(len(bugs))
-                bugs.append(Bug(bugImg,randIntPos('x',60),randIntPos('y',60),60,60,screen))
-            createBug=False
+                bugs.append(Bug(bugImg, randIntPos('x', 60),
+                            randIntPos('y', 60), 60, 60, screen))
+            createBug = False
 
         for bug in bugs[:]:
             if moveBugs:
                 bug.moveRandom(25)
             bug.blitBug()
-        moveBugs=False
-  
-
-        # "Gravity"
-        # if player.rect.bottom < SCREENHEIGHT:
-        #     if player.speedY == 0:
-        #         player.rect.move_ip(0,3)
-
-
-        
+        moveBugs = False
 
         pygame.display.flip()
-        
-
