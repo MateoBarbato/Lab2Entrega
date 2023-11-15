@@ -9,3 +9,5 @@ EL OBJETIVO DEL JUEGO VA A SER CAZAR LA MAYOR CANTIDAD DE BICHOS(BUGS) POSIBLES 
 -Crear los sprites funcionales
 
 -hacer pathings con os.cwd etc (PARA FOTOS Y PARA CARGAR IMAGENES)
+
+-Recortar bordes verdes en piskel

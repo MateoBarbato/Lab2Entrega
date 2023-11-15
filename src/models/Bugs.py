@@ -1,54 +1,77 @@
 from random import randint
 import pygame
-from Config import SCREENHEIGHT, SCREENWIDTH
+from Config import SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, loadImage
+from spriteSheet import loadSprites
 
 
 class Bug:
 
-    def __init__(self, image: pygame.image, x: int, y: int, width: int, height: int, screen: pygame.display) -> None:
+    def __init__(self, x: int, y: int, width: int, height: int, screen: pygame.display) -> None:
+        self.bugList = ['pokemon1.png', 'pokemon2.png', 'pokemon3.png']
         self.x = x
         self.y = y
         self.speed = 15
         self.__pos = (x, y)
         self.width = width
         self.height = height
-        self.image = image
-        self.image = pygame.transform.scale(self.image, (width, height))
+        self.currentFrame = 0
+        self.imageIndex = randint(0, 2)
+        self.sheet = loadImage(self.bugList[self.imageIndex])
+        self.spriteKeys = ['down', 'rigth', 'left']
+        self.animations = loadSprites(
+            self.sheet, SPRITEBUGSIZE, SPRITEBUGSIZE, SPRITEBUGROW, SPRITEBUGCOL, self.spriteKeys)
+        self.image = self.setImage(self.animations['down'][self.currentFrame])
         self.rect = self.image.get_rect()
         self.rect.center = (self.pos)
-        # self.rect.center = (randint(0,SCREENWIDTH-75),randint(0,SCREENHEIGHT-75))
         self.mask = pygame.mask.from_surface(self.image)
         self.screen = screen
         self.isBlited = False
-
-    def blitBug(self):
-        self.screen.blit(self.image, self.rect)
+        self.lastUpdate = pygame.time.get_ticks()
+        self.animationSpeed = 50
+        self.ammountOfFrames = SPRITEBUGCOL
 
     def delBug(self):
         del Bug
+
+    def setImage(self, image):
+        self.image = pygame.transform.scale(image, (self.width, self.height))
+        return self.image
+
+    def animateDirection(self, key: str):
+        currentTime = pygame.time.get_ticks()
+        if currentTime - self.lastUpdate > self.animationSpeed:
+            self.setImage(self.animations[key][self.currentFrame])
+            self.currentFrame += 1
+            if self.currentFrame == self.ammountOfFrames:
+                self.currentFrame = 0
+            self.lastUpdate = currentTime
 
     def setRandomPos(self):
         newpos = (randint(0, SCREENWIDTH-self.width),
                   randint(0, SCREENHEIGHT-self.height))
         self.setpos(newpos)
 
-    def moveRandom(self, speed=1.5):
+    def update(self,):
         valueDir = randint(1, 4)
-        self.moveBug(valueDir, speed)
-
-    def moveBug(self, valueDir, speed=1.5):
         if valueDir == 1:
             if self.rect.top > 0:
-                self.rect.move_ip(0, -speed)
+                self.rect.move_ip(0, -self.speed)
+                self.animateDirection('down')
         if valueDir == 2:
-            if self.rect.bottom < SCREENHEIGHT:
-                self.rect.move_ip(0, speed)
+            if self.rect.bottom < SCREENHEIGHT-200:
+                self.rect.move_ip(0, self.speed)
+                self.animateDirection('down')
         if valueDir == 3:
             if self.rect.left > 0:
-                self.rect.move_ip(-speed, 0)
+                self.rect.move_ip(-self.speed, 0)
+                self.animateDirection('left')
         if valueDir == 4:
             if self.rect.right < SCREENWIDTH-self.rect.width:
-                self.rect.move_ip(speed, 0)
+                self.rect.move_ip(self.speed, 0)
+                self.animateDirection('rigth')
+
+    def blitBug(self):
+        self.screen.blit(self.image, self.rect)
 
     @property
     def pos(self):

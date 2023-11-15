@@ -32,7 +32,6 @@ createBugEvent = pygame.USEREVENT+2
 # Loading assets
 try:
     playerImg = pygame.image.load('assets/totodyle.png')
-    bugImg = pygame.image.load('assets/bug.png')
 except FileNotFoundError:
     errMsg('Error while loading files. Exiting the game...')
     exit()
@@ -46,10 +45,10 @@ except pygame.error as e:
     errMsg(e)
 
 while True:
-    player = Player(playerImg.convert_alpha(), SCREENWIDTH /
-                    2, SCREENHEIGHT/2, 60, 60, screen)
-    # bugs.append(Bug(bugImg, randIntPos('x', 60),
-    #             randIntPos('y', 60), 60, 60, screen))
+    player = Player(SCREENWIDTH /
+                    2, SCREENHEIGHT/2, 60, 80, screen)
+    bugs.append(Bug(randIntPos('x', 60),
+                randIntPos('y', 60), 60, 60, screen))
 
     muteState = mainMenu(screen, muteState)
     levelSelector(screen)
@@ -105,13 +104,13 @@ while True:
         if createBug:
             if len(bugs) < 8:
                 pass
-                # bugs.append(Bug(bugImg, randIntPos('x', 60),
-                #             randIntPos('y', 60), 60, 60, screen))
+                bugs.append(Bug(randIntPos('x', 60),
+                            randIntPos('y', 60), 60, 60, screen))
             createBug = False
 
         for bug in bugs[:]:
             if moveBugs:
-                bug.moveRandom(25)
+                bug.update()
             bug.blitBug()
         moveBugs = False
 
