@@ -21,11 +21,11 @@ class Game:
         self.allSprites = pygame.sprite.Group()
         self.animationSpeed = ANIMATIONSPEED
         self.player = Player([self.allSprites], SCREENWIDTH /
-                             2, SCREENHEIGHT/2, 60, 80, self.screen)
+                             2, SCREENHEIGHT/2, PLAYERWIDTH, PLAYERHEIGHT, self.screen)
         self.bug = Bug([self.allSprites], randIntPos('x', 60),
-                       randIntPos('y', 60), 80, 80, self.screen)
-        self.bugsStatic.append(BugStatic([self.allSprites], randIntPos('x', 80), SCREENHEIGHT - 40,
-                                         80, 80, self.screen, 'pokemon4.png'))
+                       randIntPos('y', 60), BUGSIZE, BUGSIZE, self.screen)
+        self.bugsStatic.append(BugStatic([self.allSprites], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
+                                         BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
         self.bullets = []
         self.muteState = mainMenu(self.screen, self.muteState)
         self.run()
@@ -58,8 +58,8 @@ class Game:
     def generateEnemiesRandom(self):
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdate > 10000:
-            self.bugs.append(Bug([self.allSprites], randIntPos('x', 60),
-                                 randIntPos('y', 60), 60, 60, self.screen))
+            self.bugs.append(Bug([self.allSprites], randIntPos('x', BUGSIZE),
+                                 randIntPos('y', BUGSIZE), BUGSIZE, BUGSIZE, self.screen))
             self.lastUpdate = currentTime
 
     def timedSequence(self):
@@ -68,7 +68,7 @@ class Game:
             print('entre')
             for bug in self.bugsStatic[:]:
                 self.bullets.append(Bullet([self.allSprites], bug.x, bug.y,
-                                           5, (20, 20), 'plant', bug.currentFacing))
+                                           3, (BULLETSIZE, BULLETSIZE), 'plant', bug.currentFacing))
             self.lastUpdate = currentTime
 
     def handleBullets(self):

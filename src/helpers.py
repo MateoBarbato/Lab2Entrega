@@ -26,7 +26,8 @@ def randIntPos(axis, axisSize):
 def createScreen():
     try:
         screen = pygame.display.set_mode(SCREENSIZE)
-        screen.fill(WHITE, pygame.Rect(0, 0, SCREENWIDTH, SCREENHEIGHT))
+        screen.fill(WHITE, pygame.Rect(
+            0, 0, SCREENWIDTH, SCREENHEIGHT))
         pygame.display.set_caption("PokeBug")
         pygame.display.set_icon(pygame.image.load('assets/totodyle.png'))
         return screen

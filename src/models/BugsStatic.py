@@ -1,7 +1,7 @@
 from random import randint
 from turtle import down
 import pygame
-from Config import SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
+from Config import LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
 from models.Bullet import Bullet
 from spriteSheet import loadSprites
 
@@ -42,7 +42,7 @@ class BugStatic(pygame.sprite.Sprite):
 
     def setRandomPos(self):
         print(self.y)
-        x = randint(0, SCREENWIDTH-self.width)
+        x = randint(0, LIMITWIDTHGROUND-self.width)
         y = self.y
         self.x = x
         self.y = y
@@ -67,7 +67,7 @@ class BugStatic(pygame.sprite.Sprite):
 
     def update(self):
         # determino la direccion del sprite
-        if self.x > SCREENWIDTH/2:
+        if self.x > LIMITWIDTHGROUND/2:
             self.animateDirection()
             self.currentFacing = 'left'
         else:

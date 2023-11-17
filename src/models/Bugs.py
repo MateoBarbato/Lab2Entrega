@@ -1,6 +1,6 @@
 from random import randint
 import pygame
-from Config import SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
+from Config import LIMITHEIGHTGROUND, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
 from spriteSheet import loadSprites
 
 
@@ -51,8 +51,8 @@ class Bug(pygame.sprite.Sprite):
             self.lastUpdate = currentTime
 
     def setRandomPos(self):
-        newpos = (randint(0, SCREENWIDTH-self.width),
-                  randint(0, SCREENHEIGHT-self.height))
+        newpos = (randint(0, LIMITWIDTHGROUND-self.width),
+                  randint(0, LIMITHEIGHTGROUND-self.height))
         self.setpos(newpos)
 
     def update(self,):
@@ -62,7 +62,7 @@ class Bug(pygame.sprite.Sprite):
                 self.rect.move_ip(0, -self.speed)
                 self.animateDirection('down')
         if valueDir == 2:
-            if self.rect.bottom < SCREENHEIGHT-200:
+            if self.rect.bottom < LIMITHEIGHTGROUND-self.height:
                 self.rect.move_ip(0, self.speed)
                 self.animateDirection('down')
         if valueDir == 3:
@@ -70,7 +70,7 @@ class Bug(pygame.sprite.Sprite):
                 self.rect.move_ip(-self.speed, 0)
                 self.animateDirection('left')
         if valueDir == 4:
-            if self.rect.right < SCREENWIDTH-self.rect.width:
+            if self.rect.right < LIMITWIDTHGROUND-self.rect.width:
                 self.rect.move_ip(self.speed, 0)
                 self.animateDirection('rigth')
 
