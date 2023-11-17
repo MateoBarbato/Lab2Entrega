@@ -1,16 +1,17 @@
 from random import randint
 import pygame
-from Config import SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, loadImage
+from Config import SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
 from spriteSheet import loadSprites
 
 
-class Bug:
+class Bug(pygame.sprite.Sprite):
 
-    def __init__(self, x: int, y: int, width: int, height: int, screen: pygame.display) -> None:
+    def __init__(self, groups, x: int, y: int, width: int, height: int, screen: pygame.display) -> None:
+        super().__init__(groups)
         self.bugList = ['pokemon1.png', 'pokemon2.png', 'pokemon3.png']
         self.x = x
         self.y = y
-        self.speed = 15
+        self.speed = 1
         self.__pos = (x, y)
         self.width = width
         self.height = height
@@ -27,7 +28,7 @@ class Bug:
         self.screen = screen
         self.isBlited = False
         self.lastUpdate = pygame.time.get_ticks()
-        self.animationSpeed = 50
+        self.animationSpeed = ANIMATIONSPEED
         self.ammountOfFrames = SPRITEBUGCOL
 
     def delBug(self):
@@ -70,7 +71,7 @@ class Bug:
                 self.rect.move_ip(self.speed, 0)
                 self.animateDirection('rigth')
 
-    def blitBug(self):
+    def draw(self):
         self.screen.blit(self.image, self.rect)
 
     @property

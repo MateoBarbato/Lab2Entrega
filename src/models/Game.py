@@ -1,65 +1,61 @@
 import pygame
-from helpers import drawBackground, exit
+from helpers import *
+from Config import *
+from colors import *
+from models.Bugs import Bug
+from models.Player import Player
 
 
-class Game ():
+class Game:
 
     def __init__(self) -> None:
-        pass
+        self.screen = createScreen()
+        self.clock = pygame.time.Clock()
+        self.clock.tick(60)
+        self.lastUpdate = pygame.time.get_ticks()
+        self.muteState = MUTESTATE
+        self.bugs = []
+        self.allSprites = pygame.sprite.Group()
+        self.player = Player([self.allSprites], SCREENWIDTH /
+                             2, SCREENHEIGHT/2, 60, 80, self.screen)
+        self.bug = Bug([self.allSprites], randIntPos('x', 60),
+                       randIntPos('y', 60), 60, 60, self.screen)
+        self.muteState = mainMenu(self.screen, self.muteState)
+        self.run()
+
+    # def createBug():
 
     def run(self):
-        gameRunning = True
-        while gameRunning:
-            # BLIT ZONE
-            drawBackground(screen, background)
+        self.gameRunning = True
+        background = loadBackground('fondo.png')
+        while self.gameRunning:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        # limpiar()
-                        gameRunning = False
-                    if event.key == pygame.K_SPACE:
-                        bug = None
-                        pass
-                    if event.key == pygame.K_h:
-                        hardcoreMode = not hardcoreMode
-                    if event.key == pygame.K_m:
-                        muteState = not muteState
-                    if event.key == pygame.K_SEMICOLON:
-                        cheatOn = not cheatOn
-                    if event.key == pygame.K_k:
-                        pass
-                    if event.key == pygame.K_w:
-                        pass
-                if event.type == pygame.USEREVENT+1:
-                    moveBugs = True
-                if event.type == pygame.USEREVENT+2:
-                    createBug = True
-            if cheatOn:
-                powerUp1 = True
-            else:
-                powerUp1 = False
-
-            if player:
-                player.blitPlayer()
-                player.update()
-                if powerUp1:
-                    player.movePlayer(8)
-                else:
-                    player.movePlayer(4)
-
-            if createBug:
-                if len(bugs) < 8:
-                    bugs.append(Bug(bugImg, randIntPos('x', 60),
-                                randIntPos('y', 60), 60, 60, screen))
-                createBug = False
-
-            for bug in bugs[:]:
-                if moveBugs:
-                    bug.moveRandom(25)
-                bug.blitBug()
-            moveBugs = False
+                        self.quit()
+                        exit()
+            # BLIT ZONE
+            drawBackground(self.screen, background)
+            self.generateEnemiesRandom()
+            self.draw()
 
             pygame.display.flip()
+
+    def generateEnemiesRandom(self):
+
+        currentTime = pygame.time.get_ticks()
+        if currentTime - self.lastUpdate > 10000:
+            self.bugs.append(Bug([self.allSprites], randIntPos('x', 60),
+                                 randIntPos('y', 60), 60, 60, self.screen))
+            self.lastUpdate = currentTime
+
+    def draw(self):
+
+        self.allSprites.draw(self.screen)
+        self.allSprites.update()
+
+    def quit(self):
+        self.gameRunning = False

@@ -23,6 +23,17 @@ def randIntPos(axis, axisSize):
         return randint(0, SCREENHEIGHT-axisSize)
 
 
+def createScreen():
+    try:
+        screen = pygame.display.set_mode(SCREENSIZE)
+        screen.fill(WHITE, pygame.Rect(0, 0, SCREENWIDTH, SCREENHEIGHT))
+        pygame.display.set_caption("PokeBug")
+        pygame.display.set_icon(pygame.image.load('assets/totodyle.png'))
+        return screen
+    except pygame.error as e:
+        errMsg(e)
+
+
 def cleanScreen(screen):
     screenBackroundRect = pygame.Rect(0, 0, SCREENWIDTH, SCREENHEIGHT)
     screen.fill(BLACK, screenBackroundRect)
@@ -55,13 +66,13 @@ def mainMenu(screen, muteValue: bool):
     muteValue = muteValue
     ButtonStart = Button(BUTTONWIDTH, BUTTONHEIGHT,
                          (SCREENWIDTH)/2, (BUTTONHEIGHT*3), 'Start', screen)
-    ButtonStart.CreateButtonMenu(screen)
+    ButtonStart.CreateButtonMenu()
     ButtonOptions = Button(BUTTONWIDTH, BUTTONHEIGHT,
                            (SCREENWIDTH)/2, (SCREENHEIGHT)/2, 'Options', screen)
-    ButtonOptions.CreateButtonMenu(screen)
+    ButtonOptions.CreateButtonMenu()
     ButtonExit = Button(BUTTONWIDTH, BUTTONHEIGHT,
                         (SCREENWIDTH)/2, (SCREENHEIGHT-BUTTONHEIGHT*3), 'Exit', screen)
-    ButtonExit.CreateButtonMenu(screen)
+    ButtonExit.CreateButtonMenu()
     pygame.display.flip()
     while True:
         for event in pygame.event.get():
@@ -71,11 +82,11 @@ def mainMenu(screen, muteValue: bool):
                 if event.key == pygame.K_ESCAPE:
                     exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
+
                 if event.button == 1:
                     if ButtonStart.buttonPressed():
                         # enviar al usuario al level selector
-                        return muteValue
+                        return levelSelector(screen, muteValue)
                         # return muteValue
                     if ButtonOptions.buttonPressed():
                         optionMenu(screen, muteValue)
@@ -92,10 +103,10 @@ def optionMenu(screen, muteValue: bool):
     drawBackground(screen, background)
     ButtonBack = Button(BUTTONWIDTH, BUTTONHEIGHT,
                         (SCREENWIDTH)/2, (BUTTONHEIGHT*3), 'Back', screen)
-    ButtonBack.CreateButtonMenu(screen)
+    ButtonBack.CreateButtonMenu()
     ButtonCredits = Button(BUTTONWIDTH, BUTTONHEIGHT, (SCREENWIDTH)/2,
                            (SCREENHEIGHT-BUTTONHEIGHT*3), 'Credits', screen)
-    ButtonCredits.CreateButtonMenu(screen)
+    ButtonCredits.CreateButtonMenu()
 
     ButtonMute = Button(BUTTONWIDTH, BUTTONHEIGHT,
                         (SCREENWIDTH)/2, (SCREENHEIGHT)/2, 'Mute On', screen)
@@ -103,10 +114,10 @@ def optionMenu(screen, muteValue: bool):
     while True:
         if muteValue == False or muteValue == None:
             ButtonMute.colorText = GREEN
-            ButtonMute.CreateButtonMenu(screen)
+            ButtonMute.CreateButtonMenu()
         else:
             ButtonMute.colorText = RED
-            ButtonMute.CreateButtonMenu(screen)
+            ButtonMute.CreateButtonMenu()
         pygame.display.update(ButtonMute.rect)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -133,11 +144,11 @@ def creditsMenu(screen, muteValue: bool):
 
     ButtonBack = Button(BUTTONWIDTH, BUTTONHEIGHT-20,
                         (BUTTONWIDTH), (SCREENHEIGHT-BUTTONHEIGHT*1.5), 'Back', screen)
-    ButtonBack.CreateButtonMenu(screen, BLACK, borderRadius=8)
+    ButtonBack.CreateButtonMenu(BLACK, borderRadius=8)
 
     ButtonExit = Button(BUTTONWIDTH, BUTTONHEIGHT-20, (SCREENWIDTH -
                         BUTTONWIDTH), (SCREENHEIGHT-BUTTONHEIGHT*1.5), 'Exit', screen)
-    ButtonExit.CreateButtonMenu(screen, BLACK, borderRadius=8)
+    ButtonExit.CreateButtonMenu(BLACK, borderRadius=8)
 
     copywriteImg = loadImage('gameFreak.png')
     copyImgRect = copywriteImg.get_rect()
@@ -162,7 +173,7 @@ def creditsMenu(screen, muteValue: bool):
                 if event.key == pygame.K_ESCAPE:
                     exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
+
                 if event.button == 1:
                     if ButtonBack.buttonPressed():
                         optionMenu(screen, muteValue)
@@ -171,19 +182,25 @@ def creditsMenu(screen, muteValue: bool):
                         sys.exit()
 
 
-def levelSelector(screen):
+def levelSelector(screen, muteValue):
     backgroundgrass = BRACKGROUNDGRASS
     backgroundtrees = BRACKGROUNDTREES
     drawBackground(screen, backgroundgrass)
     drawBackground(screen, backgroundtrees)
 
-    ButtonExit = Button(70, 70, 150, (0+BUTTONHEIGHT*2), 'X', screen)
+    ButtonExit = Button(40, 40, 150, (0+BUTTONHEIGHT*2),
+                        'X', screen, colorbackground=LAVENDER)
+
+    Button(50, 50, ButtonExit.rect.centerx, (ButtonExit.rect.centery), '',
+           screen, colorbackground=LAVENDERDARK).CreateButtonMenu(screen, borderRadius=5)
+
     ButtonExit.setFont(20, bold=True)
-    ButtonExit.CreateButtonMenu(screen, borderRadius=2)
+    ButtonExit.CreateButtonMenu(screen, borderRadius=5)
 
     Level1 = Button(120, 120, SCREENWIDTH/2,
                     SCREENHEIGHT/3, 'Level 1', screen,)
     Level1.CreateButtonMenu(screen)
+
     pygame.display.flip()
     while True:
         for event in pygame.event.get():
@@ -193,12 +210,11 @@ def levelSelector(screen):
                 if event.key == pygame.K_ESCAPE:
                     exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
+
                 if event.button == 1:
                     if Level1.buttonPressed():
                         # enviar al usuario al level selector
-                        return
-
+                        return muteValue
                     # if ButtonOptions.buttonPressed():
                     #     return
                     if ButtonExit.buttonPressed():

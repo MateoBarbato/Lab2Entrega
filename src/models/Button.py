@@ -29,7 +29,7 @@ class Button:
     def setFont(self, size=20, fontFamily='Open Sans', bold=False, italic=False):
         self.font = pygame.font.SysFont(fontFamily, size, bold, italic)
 
-    def CreateButtonMenu(self, screen, background=LAVENDER, borderRadius=10):
+    def CreateButtonMenu(self, background=LAVENDER, borderRadius=10):
         self.setFont(35)
         text = self.font.render(self.text, False, self.colorText)
         centerOfRect = text.get_rect(
