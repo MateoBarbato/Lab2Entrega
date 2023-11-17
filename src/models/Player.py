@@ -88,7 +88,7 @@ class Player(pygame.sprite.Sprite):
                 if self.direction == 'left':
                     self.animateDirection('left')
                     if self.rect.left > 0:
-                        self.rect.move_ip(-self.speedX, GRAVITY)
+                        self.rect.move_ip(-self.speedX/2, GRAVITY)
                     else:
                         self.animateDirection('down')
                         self.rect.move_ip(0, GRAVITY)
@@ -96,7 +96,7 @@ class Player(pygame.sprite.Sprite):
                 if self.direction == 'rigth':
                     self.animateDirection('rigth')
                     if self.rect.right < SCREENWIDTH:
-                        self.rect.move_ip(self.speedX, GRAVITY)
+                        self.rect.move_ip(self.speedX/2, GRAVITY)
                     else:
                         self.animateDirection('down')
                         self.rect.move_ip(0, GRAVITY)
@@ -104,11 +104,6 @@ class Player(pygame.sprite.Sprite):
                 else:
                     self.animateDirection('down')
                     self.rect.move_ip(0, GRAVITY)
-        # else:
-        #     # self.direction = None
-        #
-
-        # PLAYER SUBIENDO
         if key[pygame.K_w]:
             self.falling = False
             self.rect.move_ip(0, -self.speedY)
