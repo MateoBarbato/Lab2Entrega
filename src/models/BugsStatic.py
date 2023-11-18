@@ -1,14 +1,14 @@
 from random import randint
-from turtle import down
 import pygame
-from Config import LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
+from Config import BULLETSIZE, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
 from models.Bullet import Bullet
+
 from spriteSheet import loadSprites
 
 
 class BugStatic(pygame.sprite.Sprite):
 
-    def __init__(self, groups, x: int, y: int, width: int, height: int, screen: pygame.display, imageSheet: str = None) -> None:
+    def __init__(self, groups, bulletsGroup, x: int, y: int, width: int, height: int, screen: pygame.display, imageSheet: str = None) -> None:
         super().__init__(groups)
         self.groupsVar = groups
         self.bugList = ['pokemon1.png', 'pokemon2.png', 'pokemon3.png']
@@ -37,8 +37,8 @@ class BugStatic(pygame.sprite.Sprite):
         self.animationSpeed = ANIMATIONSPEED
         self.ammountOfFrames = SPRITEBUGCOL
         self.currentFacing = 'left'
+        self.bullets = bulletsGroup
         # self.setRandomPos()
-        self.bullets = []
 
     def setRandomPos(self):
         print(self.y)
@@ -50,6 +50,14 @@ class BugStatic(pygame.sprite.Sprite):
 
     def delBug(self):
         del self
+
+    def createBullet(self, spriteGroup):
+        if self.currentFacing == 'left':
+            spriteGroup.add(Bullet([spriteGroup], self.x - self.width/3, self.y + self.height/10,
+                                   5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
+        else:
+            spriteGroup.add(Bullet([spriteGroup], self.x + self.width/3, self.y + self.height/10,
+                                   5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
 
     def setImage(self, image):
         self.image = pygame.transform.scale(image, (self.width, self.height))
@@ -66,6 +74,7 @@ class BugStatic(pygame.sprite.Sprite):
             self.lastUpdate = currentTime
 
     def update(self):
+
         # determino la direccion del sprite
         if self.x > LIMITWIDTHGROUND/2:
             self.animateDirection()
@@ -73,8 +82,6 @@ class BugStatic(pygame.sprite.Sprite):
         else:
             self.animateDirection()
             self.currentFacing = 'rigth'
-        # una vez se la direccion creo el disparo
-        # self.shoot()
 
     def draw(self):
         self.screen.blit(self.image, self.rect)

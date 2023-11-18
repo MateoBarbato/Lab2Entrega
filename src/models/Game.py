@@ -2,7 +2,7 @@ import pygame
 from helpers import *
 from Config import *
 from colors import *
-from models.Bugs import Bug
+from models.Bug import Bug
 from models.BugsStatic import BugStatic
 from models.Bullet import Bullet
 from models.Player import Player
@@ -15,18 +15,20 @@ class Game:
         self.clock = pygame.time.Clock()
         self.clock.tick(60)
         self.lastUpdate = pygame.time.get_ticks()
+        self.lastUpdateShooting = pygame.time.get_ticks()
         self.muteState = MUTESTATE
-        self.bugs = []
-        self.bugsStatic = []
+
         self.allSprites = pygame.sprite.Group()
+        self.shooterEnemy = pygame.sprite.Group()
+        self.bullets = pygame.sprite.Group()
+
         self.animationSpeed = ANIMATIONSPEED
         self.player = Player([self.allSprites], SCREENWIDTH /
                              2, SCREENHEIGHT/2, PLAYERWIDTH, PLAYERHEIGHT, self.screen)
-        self.bug = Bug([self.allSprites], randIntPos('x', 60),
-                       randIntPos('y', 60), BUGSIZE, BUGSIZE, self.screen)
-        self.bugsStatic.append(BugStatic([self.allSprites], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
-                                         BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
-        self.bullets = []
+        # self.bug = Bug([self.shooterEnemy], randIntPos('x', 60),
+        #                randIntPos('y', 60), BUGSIZE, BUGSIZE, self.screen)
+        self.shooterEnemy.add(BugStatic([self.shooterEnemy], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
+                                        BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
         self.muteState = mainMenu(self.screen, self.muteState)
         self.run()
 
@@ -44,46 +46,71 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         self.quit()
                         exit()
+                    if event.key == pygame.K_a:
+                        self.player.control(-PLAYERVELOCITY, 0)
+                        self.player.animateDirection('left')
+                    if event.key == pygame.K_d:
+                        self.player.control(PLAYERVELOCITY, 0)
+                        self.player.animateDirection('rigth')
+                    if event.key == pygame.K_w:
+                        self.player.control(0, -(PLAYERVELOCITY))
+                    if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                        self.player.dance = True
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_a:
+                        self.player.control(PLAYERVELOCITY, 0)
+                        self.player.animateDirection('down')
+                    if event.key == pygame.K_d:
+                        self.player.control(-PLAYERVELOCITY, 0)
+                        self.player.animateDirection('down')
+                    if event.key == pygame.K_w:
+                        self.player.control(0, PLAYERVELOCITY)
+                        self.player.falling = True
+                    if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                        self.player.dance = False
             # BLIT Z
-            if len(self.bugs) < 8:
+            if len(self.shooterEnemy) < 3:
                 self.generateEnemiesRandom()
 
-            if self.bugsStatic != []:
+            if len(self.shooterEnemy) != 0:
                 self.timedSequence()
-            self.handleBullets()
+
             self.draw()
 
             pygame.display.flip()
 
     def generateEnemiesRandom(self):
         currentTime = pygame.time.get_ticks()
-        if currentTime - self.lastUpdate > 10000:
-            self.bugs.append(Bug([self.allSprites], randIntPos('x', BUGSIZE),
-                                 randIntPos('y', BUGSIZE), BUGSIZE, BUGSIZE, self.screen))
+        if currentTime - self.lastUpdate > 1500:
+            self.shooterEnemy.add(BugStatic([self.shooterEnemy], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
+                                            BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
             self.lastUpdate = currentTime
 
     def timedSequence(self):
         currentTime = pygame.time.get_ticks()
-        if currentTime - self.lastUpdate > 3000:
-            print('entre')
-            for bug in self.bugsStatic[:]:
-                self.bullets.append(Bullet([self.allSprites], bug.x, bug.y,
-                                           3, (BULLETSIZE, BULLETSIZE), 'plant', bug.currentFacing))
-            self.lastUpdate = currentTime
-
-    def handleBullets(self):
-        for bullet in self.bullets[:]:
-            if bullet.x < 0:
-                print('Fuera de pantalla izq')
-                self.allSprites.remove(bullet)
-            elif bullet.x > SCREENWIDTH:
-                print('Fuera de pantalla der')
-                self.allSprites.remove(bullet)
+        if currentTime - self.lastUpdateShooting > 2000:
+            for bug in self.shooterEnemy:
+                bug.createBullet(self.bullets)
+            self.lastUpdateShooting = currentTime
 
     def draw(self):
         drawBackground(self.screen, BACKGROUNDMAIN)
         self.allSprites.draw(self.screen)
+        self.shooterEnemy.draw(self.screen)
+        self.bullets.draw(self.screen)
+
+        pygame.sprite.spritecollide(
+            self.player, self.shooterEnemy, True)
+        pygame.sprite.spritecollide(
+            self.player, self.bullets, True)
+
+        # for bullet in self.bullets:
+        #     pygame.sprite.spritecollide(
+        #         bullet, self.shooterEnemy, True)
+
         self.allSprites.update()
+        self.shooterEnemy.update()
+        self.bullets.update()
 
     def quit(self):
         self.gameRunning = False

@@ -4,6 +4,8 @@ import secrets
 from turtle import color
 import pygame
 import sys
+from models.BugsStatic import BugStatic
+from models.Bullet import Bullet
 from models.Button import Button
 from models.Text import Text
 from colors import *
@@ -18,9 +20,9 @@ def exit():
 
 def randIntPos(axis, axisSize):
     if axis == 'x':
-        return randint(0, SCREENWIDTH-axisSize)
+        return randint(axisSize, SCREENWIDTH-axisSize)
     else:
-        return randint(0, SCREENHEIGHT-axisSize)
+        return randint(axisSize, SCREENHEIGHT-axisSize)
 
 
 def createScreen():
