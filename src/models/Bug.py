@@ -1,5 +1,4 @@
 from random import randint
-from turtle import left
 import pygame
 from Config import LIMITHEIGHTGROUND, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
 from spriteSheet import loadSprites

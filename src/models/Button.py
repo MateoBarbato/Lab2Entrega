@@ -26,8 +26,8 @@ class Button:
                          self.rect, border_radius=borderRadius)
         pygame.display.flip()
 
-    def setFont(self, size=20, fontFamily='Open Sans', bold=False, italic=False):
-        self.font = pygame.font.SysFont(fontFamily, size, bold, italic)
+    def setFont(self):
+        self.font = pygame.font.Font('assets/fonts/PixelifySans-VariableFont_wght.ttf',24)
 
     def CreateButtonMenu(self, background=LAVENDER, borderRadius=10):
         self.setFont(35)

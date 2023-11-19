@@ -1,7 +1,5 @@
 from ast import main
 from random import randint
-import secrets
-from turtle import color
 import pygame
 import sys
 from models.BugsStatic import BugStatic
@@ -197,7 +195,7 @@ def levelSelector(screen, muteValue):
     Button(50, 50, ButtonExit.rect.centerx, (ButtonExit.rect.centery), '',
            screen, colorbackground=LAVENDERDARK).CreateButtonMenu(screen, borderRadius=5)
 
-    ButtonExit.setFont(20, bold=True)
+    ButtonExit.setFont(20)
     ButtonExit.CreateButtonMenu(screen, borderRadius=5)
 
     Level1 = Button(120, 120, SCREENWIDTH/2,
