@@ -46,6 +46,7 @@ class Bullet(pygame.sprite.Sprite):
         if currentTime - self.lastUpdateKilling > 250:
             self.setImage(self.animations[key][self.currentFrame])
             self.currentFrame += 1
+            self.rect.move_ip(0, 8)
             if self.currentFrame == self.ammountOfFrames:
                 self.loopAmmountKilling = True
                 self.currentFrame = 0
