@@ -26,18 +26,21 @@ class Button:
                          self.rect, border_radius=borderRadius)
         pygame.display.flip()
 
-    def setFont(self, fontSize=20):
-        self.font = pygame.font.Font(
-            'assets/fonts/PixelifySans-VariableFont_wght.ttf', fontSize)
+    def setText(self,newtext,*colorText):
+
+        self.text = newtext
+        if colorText:
+            self.colorText = colorText
+
+    def setFont(self,fontSize):
+        self.font = pygame.font.Font('assets/fonts/PixelifySans-VariableFont_wght.ttf',fontSize)
 
     def CreateButtonMenu(self, background=LAVENDER, borderRadius=10):
         self.setFont(35)
         text = self.font.render(self.text, False, self.colorText)
-        centerOfRect = text.get_rect(
-            center=(self.rect.centerx, self.rect.centery))
+        centerOfRect = text.get_rect(center=(self.rect.centerx,self.rect.centery))
         self.drawRect(borderRadius)
-        self.screen.blit(text, centerOfRect)
-        # pygame.display.flip()
+        self.screen.blit(text, centerOfRect.topleft)
 
     def buttonPressed(self):
         pos = pygame.mouse.get_pos()

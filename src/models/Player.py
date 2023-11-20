@@ -67,55 +67,5 @@ class Player(pygame.sprite.Sprite):
         else:
             self.rect.y = self.rect.y + self.movey
 
-        # if key[pygame.K_LSHIFT]:
-        #     self.animateDirection('dance')
-
-        # if key[pygame.K_a]:
-        #     if self.rect.left > 60:
-        #         self.direction = 'left'
-        #         self.animateDirection('left')
-        #         self.rect.move_ip(-(self.speedX/1.5), 0)
-
-        # if key[pygame.K_d]:
-        #     if self.rect.right < LIMITWIDTHGROUND:
-        #         self.direction = 'rigth'
-        #         self.animateDirection('rigth')
-        #         self.rect.move_ip(self.speedX, 0)
-
-        # if key[pygame.K_w]:
-        #     self.falling = False
-        #     self.rect.move_ip(0, -self.speedY)
-
-        # if key[pygame.K_w] == False:
-        #     if self.firstTimeFalling:
-        #         self.animateDirection('knee')
-        #     else:
-        #         self.animateDirection('down')
-        #     # PLAYER TOCA EL PISO
-        #     if self.rect.bottom > LIMITHEIGHTGROUND:
-        #         self.direction = 'down'
-        #         self.falling = False
-        #         self.firstTimeFalling = False
-        #     # Player Cayendo
-        #     elif self.rect.bottom != LIMITHEIGHTGROUND:
-        #         self.falling = True
-        #         if self.direction == 'left':
-        #             self.animateDirection('left')
-        #             if self.rect.left > 0:
-        #                 self.rect.move_ip(-(self.speedX/1.5), GRAVITY)
-        #             else:
-        #                 self.animateDirection('down')
-        #                 self.rect.move_ip(0, GRAVITY)
-        #         if self.direction == 'rigth':
-        #             self.animateDirection('rigth')
-        #             if self.rect.right < LIMITHEIGHTGROUND:
-        #                 self.rect.move_ip(self.speedX, GRAVITY)
-        #             else:
-        #                 self.animateDirection('down')
-        #                 self.rect.move_ip(0, GRAVITY)
-        #         else:
-        #             self.animateDirection('down')
-        #             self.rect.move_ip(0, GRAVITY)
-
     def draw(self):
         self.screen.blit(self.image, self.rect)

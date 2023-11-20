@@ -66,15 +66,15 @@ class Bug(pygame.sprite.Sprite):
             self.rect.move_ip(0,GRAVITY)
         
         if self.falling == False:
-            if self.rect < BLOCKWIDTH:
+            if self.rect.left < BLOCKWIDTH:
                 print('pared izq')
                 # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
                 self.currentFacing = 'rigth'
-            elif self.rect > LIMITWIDTHGROUND:
+            elif self.rect.right > LIMITWIDTHGROUND:
                 print('pared izq')
                 # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
                 self.currentFacing = 'left'
-            elif self.currentFacing == 'left':
+            if self.currentFacing == 'left':
                 self.animateDirection()
                 self.rect.move_ip(-ENEMYVELOCITY,0)
             elif self.currentFacing == 'rigth':

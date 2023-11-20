@@ -1,6 +1,5 @@
 import pygame
 from Config import ANIMATIONSPEED, BLOCKWIDTH, LIMITWIDTHGROUND, SCREENWIDTH, SPIRTESIZEMAINHEIGHT, SPIRTESIZEMAINWIDTH, SPRITEBUGCOL, loadImage
-from models.Bug import Bug
 
 from spriteSheet import loadSprites
 

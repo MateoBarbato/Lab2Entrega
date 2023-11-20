@@ -1,6 +1,7 @@
 from random import randint
+from tarfile import BLOCKSIZE
 import pygame
-from Config import BULLETSIZE, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
+from Config import BULLETSIZE, ENEMYVELOCITY, GRAVITY, LIMITHEIGHTGROUND, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
 from models.Bullet import Bullet
 
 from spriteSheet import loadSprites
@@ -19,11 +20,7 @@ class BugStatic(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.currentFrame = 0
-        if imageSheet:
-            self.sheet = loadImage(imageSheet)
-        else:
-            self.imageIndex = randint(0, 2)
-            self.sheet = loadImage(self.bugList[self.imageIndex])
+        self.sheet = loadImage(imageSheet)
         self.spriteKeys = ['down', 'rigth', 'left']
         self.animations = loadSprites(
             self.sheet, SPRITEBUGSIZE, SPRITEBUGSIZE, SPRITEBUGROW, SPRITEBUGCOL, self.spriteKeys)
@@ -49,7 +46,7 @@ class BugStatic(pygame.sprite.Sprite):
         return (x, y)
 
     def delBug(self):
-        del self
+        del self        
 
     def createBullet(self, spriteGroup):
         if self.currentFacing == 'left':

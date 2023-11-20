@@ -63,7 +63,7 @@ def waitUser():
 def mainMenu(screen, muteValue: bool):
     background = BACKGROUNSEADAY
     drawBackground(screen, background)
-    # muteValue = muteValue if muteValue != None else False
+
     muteValue = muteValue
     ButtonStart = Button(BUTTONWIDTH, BUTTONHEIGHT,
                          (SCREENWIDTH)/2, (BUTTONHEIGHT*3), 'Start', screen)
@@ -94,14 +94,14 @@ def mainMenu(screen, muteValue: bool):
                         return
                     if ButtonExit.buttonPressed():
                         exit()
+    
 
 
 def optionMenu(screen, muteValue: bool):
     print(muteValue)
     muteValue = muteValue
-    # muteValue = muteValue if muteValue != None else False
-    background = BACKGROUNSEADAY
-    drawBackground(screen, background)
+
+    drawBackground(screen, BACKGROUNSEADAY)
     ButtonBack = Button(BUTTONWIDTH, BUTTONHEIGHT,
                         (SCREENWIDTH)/2, (BUTTONHEIGHT*3), 'Back', screen)
     ButtonBack.CreateButtonMenu()
@@ -110,16 +110,23 @@ def optionMenu(screen, muteValue: bool):
     ButtonCredits.CreateButtonMenu()
 
     ButtonMute = Button(BUTTONWIDTH, BUTTONHEIGHT,
-                        (SCREENWIDTH)/2, (SCREENHEIGHT)/2, 'Mute On', screen)
-
+                        (SCREENWIDTH)/2, (SCREENHEIGHT)/2, 'Mute On', screen,colorText=GREEN)
+    ButtonMute.CreateButtonMenu()
+    pygame.display.flip()
+    
     while True:
-        if muteValue == False or muteValue == None:
-            ButtonMute.colorText = GREEN
-            ButtonMute.CreateButtonMenu()
+        if muteValue == False or muteValue == None and ButtonMute.buttonPressed():
+            # ButtonMute.colorText = GREEN
+            ButtonMute.setText('Mute On',GREEN)
+            # ButtonMute.CreateButtonMenu()
+            
+            
         else:
-            ButtonMute.colorText = RED
-            ButtonMute.CreateButtonMenu()
-        pygame.display.update(ButtonMute.rect)
+            # ButtonMute.colorText = RED
+            ButtonMute.setText('Mute Off',RED)
+            # ButtonMute.CreateButtonMenu()
+            # pygame.display.flip()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -136,7 +143,8 @@ def optionMenu(screen, muteValue: bool):
                         return
                     if ButtonMute.buttonPressed():
                         muteValue = not muteValue
-
+                        ButtonMute.CreateButtonMenu()
+                        pygame.display.flip()
 
 def creditsMenu(screen, muteValue: bool):
     background = BACKGROUNSEANIGHT
@@ -184,24 +192,16 @@ def creditsMenu(screen, muteValue: bool):
 
 
 def levelSelector(screen, muteValue):
-    backgroundgrass = BRACKGROUNDGRASS
-    backgroundtrees = BRACKGROUNDTREES
-    drawBackground(screen, backgroundgrass)
-    drawBackground(screen, backgroundtrees)
+    drawBackground(screen, BRACKGROUNDGRASS)
+    drawBackground(screen, BRACKGROUNDTREES)
 
-    ButtonExit = Button(40, 40, 150, (0+BUTTONHEIGHT*2),
-                        'X', screen, colorbackground=LAVENDER)
-
-    Button(50, 50, ButtonExit.rect.centerx, (ButtonExit.rect.centery), '',
-           screen, colorbackground=LAVENDERDARK).CreateButtonMenu(screen, borderRadius=5)
-
-    ButtonExit.setFont(20)
-    ButtonExit.CreateButtonMenu(screen, borderRadius=5)
-
+    ButtonCross = Button(40, 40, 150, 120,
+                        'X', screen, colorbackground=LAVENDER,fontSize=20)
     Level1 = Button(120, 120, SCREENWIDTH/2,
-                    SCREENHEIGHT/3, 'Level 1', screen,)
-    Level1.CreateButtonMenu(screen)
-
+                    SCREENHEIGHT/3, 'Level 1', screen)
+    
+    Level1.CreateButtonMenu()
+    ButtonCross.CreateButtonMenu(borderRadius=5)
     pygame.display.flip()
     while True:
         for event in pygame.event.get():
@@ -215,8 +215,9 @@ def levelSelector(screen, muteValue):
                 if event.button == 1:
                     if Level1.buttonPressed():
                         # enviar al usuario al level selector
+                        # print('asd')
                         return muteValue
                     # if ButtonOptions.buttonPressed():
                     #     return
-                    if ButtonExit.buttonPressed():
+                    if ButtonCross.buttonPressed():
                         mainMenu(screen, False)
