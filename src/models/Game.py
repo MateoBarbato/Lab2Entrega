@@ -27,6 +27,8 @@ class Game:
                              2, SCREENHEIGHT/2, PLAYERWIDTH, PLAYERHEIGHT, self.screen)
         # self.bug = Bug([self.shooterEnemy], randIntPos('x', 60),
         #                randIntPos('y', 60), BUGSIZE, BUGSIZE, self.screen)
+        self.allSprites.add(Bug([self.allSprites],[self.bullets],randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
+                                        BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
         self.shooterEnemy.add(BugStatic([self.shooterEnemy], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
                                         BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
         self.muteState = mainMenu(self.screen, self.muteState)
