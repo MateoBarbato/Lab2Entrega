@@ -1,3 +1,4 @@
+import math
 import pygame
 from Config import *
 from spriteSheet import loadSprites
@@ -28,6 +29,10 @@ class Player(pygame.sprite.Sprite):
         self.animationSpeed = ANIMATIONSPEED
         self.falling = True
         self.dance = False
+        self.moving = True
+        self.currentFacing = 'down'
+        self.jumping = False
+        self.distanceTotal = 0
 
     def setPlayerSpeed(self, speed=1.5):
         self.speedX = speed
@@ -39,7 +44,8 @@ class Player(pygame.sprite.Sprite):
     def animateDirection(self, key: str):
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdate > self.animationSpeed:
-            self.setImage(self.animations[key][self.currentFrame])
+            self.setImage(
+                self.animations[key][self.currentFrame])
             self.currentFrame += 1
             if self.currentFrame == self.ammountOfFrames:
                 self.currentFrame = 0
@@ -49,23 +55,39 @@ class Player(pygame.sprite.Sprite):
         """
         control player movement
         """
-        self.movex += x
         self.movey += y
+        self.movex += x
 
     def update(self):
 
         if self.dance == True:
             self.animateDirection('dance')
-
-        self.rect.x = self.rect.x + self.movex
+        else:
+            self.animateDirection(self.currentFacing)
+        if self.rect.left < BLOCKWIDTH:
+            if self.movex > 0:
+                self.rect.x = self.rect.x + self.movex
+        elif self.rect.right > LIMITWIDTHGROUND:
+            if self.movex < 0:
+                self.rect.x = self.rect.x + self.movex
+            self.movex = 0
+        else:
+            self.rect.x = self.rect.x + self.movex
 
         if self.falling == True:
             if self.rect.bottom < LIMITHEIGHTGROUND:
                 self.rect.y = self.rect.y + PLAYERVELOCITY*1.5
             else:
                 self.falling = False
-        else:
-            self.rect.y = self.rect.y + self.movey
+        elif self.jumping:
+            self.distanceTotal += self.movey
+            if self.distanceTotal < JUMPMAXHEIGH:
+                self.jumping = False
+                self.distanceTotal = 0
+                self.falling = True
+            else:
+
+                self.rect.y = self.rect.y + self.movey
 
     def draw(self):
         self.screen.blit(self.image, self.rect)

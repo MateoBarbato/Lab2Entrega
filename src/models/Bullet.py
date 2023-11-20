@@ -30,6 +30,7 @@ class Bullet(pygame.sprite.Sprite):
         self.lastUpdateKilling = pygame.time.get_ticks()
         self.loopAmmountKilling = 0
         self.animationSpeed = ANIMATIONSPEED
+        self.isKilled = False
 
     def animateDirection(self, key: str):
         currentTime = pygame.time.get_ticks()
@@ -41,6 +42,7 @@ class Bullet(pygame.sprite.Sprite):
             self.lastUpdate = currentTime
 
     def killanimated(self, key):
+        self.currentFacing = 'dying'
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdateKilling > 250:
             self.setImage(self.animations[key][self.currentFrame])
@@ -58,19 +60,22 @@ class Bullet(pygame.sprite.Sprite):
         return self.image
 
     def update(self):
-        if self.currentFacing == 'left':
-            if self.rect.x > BLOCKWIDTH:
-                self.rect.move_ip(-self.speed, 0)
-                self.animateDirection('left')
-            else:
-                self.killanimated('dying')
+        if self.isKilled == True:
+            self.killanimated('dying')
+        else:
+            if self.currentFacing == 'left':
+                if self.rect.x > BLOCKWIDTH:
+                    self.rect.move_ip(-self.speed, 0)
+                    self.animateDirection('left')
+                else:
+                    self.isKilled = True
 
-        if self.currentFacing == 'rigth':
-            if self.rect.x < LIMITWIDTHGROUND - self.width:
-                self.rect.move_ip(self.speed, 0)
-                self.animateDirection('rigth')
-            else:
-                self.killanimated('dying')
+            if self.currentFacing == 'rigth':
+                if self.rect.x < LIMITWIDTHGROUND - self.width:
+                    self.rect.move_ip(self.speed, 0)
+                    self.animateDirection('rigth')
+                else:
+                    self.isKilled = True
 
     def draw(self):
         self.screen.blit(self.image, self.rect)

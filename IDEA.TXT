@@ -5,3 +5,12 @@
 
 
 -200 px para los datos de la partida, encontrar un fondo/ patron para el fondo
+
+
+
+        if self.movex == 'left' and self.rect.left > BLOCKWIDTH:
+            self.rect.move_ip(-PLAYERVELOCITY, 0)
+        elif self.movex == 'right' and self.rect.left < LIMITWIDTHGROUND:
+            self.rect.move_ip(PLAYERVELOCITY, 0)
+        else:
+            pass

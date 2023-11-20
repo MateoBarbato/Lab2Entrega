@@ -27,8 +27,8 @@ class Game:
                              2, SCREENHEIGHT/2, PLAYERWIDTH, PLAYERHEIGHT, self.screen)
         # self.bug = Bug([self.shooterEnemy], randIntPos('x', 60),
         #                randIntPos('y', 60), BUGSIZE, BUGSIZE, self.screen)
-        self.allSprites.add(Bug([self.allSprites],[self.bullets],randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
-                                        BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
+        self.allSprites.add(Bug([self.allSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
+                                BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
         self.shooterEnemy.add(BugStatic([self.shooterEnemy], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
                                         BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
         self.muteState = mainMenu(self.screen, self.muteState)
@@ -50,21 +50,22 @@ class Game:
                         exit()
                     if event.key == pygame.K_a:
                         self.player.control(-PLAYERVELOCITY, 0)
-                        self.player.animateDirection('left')
+                        self.player.currentFacing = 'left'
                     if event.key == pygame.K_d:
                         self.player.control(PLAYERVELOCITY, 0)
-                        self.player.animateDirection('rigth')
+                        self.player.currentFacing = 'rigth'
                     if event.key == pygame.K_w:
                         self.player.control(0, -(PLAYERVELOCITY))
+                        self.player.jumping = True
                     if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                         self.player.dance = True
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
                         self.player.control(PLAYERVELOCITY, 0)
-                        self.player.animateDirection('down')
+                        self.player.currentFacing = 'down'
                     if event.key == pygame.K_d:
                         self.player.control(-PLAYERVELOCITY, 0)
-                        self.player.animateDirection('down')
+                        self.player.currentFacing = 'down'
                     if event.key == pygame.K_w:
                         self.player.control(0, PLAYERVELOCITY)
                         self.player.falling = True
@@ -96,16 +97,22 @@ class Game:
             self.lastUpdateShooting = currentTime
 
     def draw(self):
-        drawBackground(self.screen, BACKGROUNDMAIN)
+        drawBackground(self.screen, BACKGROUNDLEVEL1)
         self.allSprites.draw(self.screen)
         self.shooterEnemy.draw(self.screen)
         self.bullets.draw(self.screen)
 
-        pygame.sprite.spritecollide(
-            self.player, self.shooterEnemy, True)
-        pygame.sprite.spritecollide(
-            self.player, self.bullets, True)
+        # pygame.sprite.spritecollide(
+        #     self.player, self.shooterEnemy, True)
 
+        for bullet in self.bullets:
+            bulletColisioned = pygame.sprite.collide_mask(self.player, bullet)
+            if bulletColisioned:
+                bullet.isKilled = True
+        for enemy in self.shooterEnemy:
+            colisionTrue = pygame.sprite.collide_mask(self.player, enemy)
+            if colisionTrue:
+                enemy.kill()
         # for bullet in self.bullets:
         #     pygame.sprite.spritecollide(
         #         bullet, self.shooterEnemy, True)

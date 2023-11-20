@@ -1,6 +1,6 @@
 from random import randint
 import pygame
-from Config import BULLETSIZE, ENEMYVELOCITY, GRAVITY, LIMITHEIGHTGROUND, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW,BLOCKWIDTH, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
+from Config import BULLETSIZE, ENEMYVELOCITY, GRAVITY, LIMITHEIGHTGROUND, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, BLOCKWIDTH, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
 from models.Bullet import Bullet
 
 from spriteSheet import loadSprites
@@ -52,34 +52,34 @@ class Bug(pygame.sprite.Sprite):
 
     def delBug(self):
         del self
-        
+
     def randDir(self):
-            if randint(0,1) == 0:
-                self.currentFacing ='left'
-            else:
-                self.currentFacing = 'rigth'
+        if randint(0, 1) == 0:
+            self.currentFacing = 'left'
+        else:
+            self.currentFacing = 'rigth'
 
     def moverAuto(self):
         if self.rect.bottom > LIMITHEIGHTGROUND:
             self.falling = False
         if self.falling:
-            self.rect.move_ip(0,GRAVITY)
-        
+            self.rect.move_ip(0, GRAVITY)
+
         if self.falling == False:
             if self.rect.left < BLOCKWIDTH:
                 print('pared izq')
                 # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
                 self.currentFacing = 'rigth'
             elif self.rect.right > LIMITWIDTHGROUND:
-                print('pared izq')
+                print('pared derecha')
                 # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
                 self.currentFacing = 'left'
             if self.currentFacing == 'left':
                 self.animateDirection()
-                self.rect.move_ip(-ENEMYVELOCITY,0)
+                self.rect.move_ip(-ENEMYVELOCITY, 0)
             elif self.currentFacing == 'rigth':
                 self.animateDirection()
-                self.rect.move_ip(ENEMYVELOCITY,0)
+                self.rect.move_ip(ENEMYVELOCITY, 0)
 
     def createBullet(self, spriteGroup):
         if self.currentFacing == 'left':

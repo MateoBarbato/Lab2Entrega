@@ -26,6 +26,8 @@ BULLETSIZE = 30
 BUGSIZE = 80
 BLOCKWIDTH = 60
 BLOCKHEIGTH = 80
+JUMPMAXHEIGH = -120
+# JUMPMAXHEIGH = -84
 
 
 def loadImage(image: str):
@@ -63,3 +65,4 @@ BRACKGROUNDGRASS = loadBackground('grass.png')
 BRACKGROUNDTREES = loadBackground('trees.png')
 BACKGROUNDMAIN = loadBackground('BossLevelV1.png')
 BACKGROUNDSECRETLEVEL = loadBackground('fondo.png')
+BACKGROUNDLEVEL1 = loadBackground('Level1V1.png')
