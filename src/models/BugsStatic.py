@@ -35,6 +35,7 @@ class BugStatic(pygame.sprite.Sprite):
         self.ammountOfFrames = SPRITEBUGCOL
         self.currentFacing = 'left'
         self.bullets = bulletsGroup
+        self.falling = True
         # self.setRandomPos()
 
     def setRandomPos(self):
@@ -49,10 +50,10 @@ class BugStatic(pygame.sprite.Sprite):
         del self
 
     def createBullet(self, spriteGroup):
-        for group in spriteGroup:
-            group.add(Bullet([spriteGroup], self.x - self.width/3, self.y + self.height/10,
-                             5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
-
+        if self.falling == False:
+            for group in spriteGroup:
+                group.add(Bullet([spriteGroup], self.rect.centerx, self.rect.centery,
+                                5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
     def setImage(self, image):
         self.image = pygame.transform.scale(image, (self.width, self.height))
         return self.image
@@ -68,6 +69,9 @@ class BugStatic(pygame.sprite.Sprite):
             self.lastUpdate = currentTime
 
     def update(self):
+
+        if self.falling:
+            self.rect.y += GRAVITY
 
         # determino la direccion del sprite
         if self.x > LIMITWIDTHGROUND/2:

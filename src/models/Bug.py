@@ -60,8 +60,8 @@ class Bug(pygame.sprite.Sprite):
             self.currentFacing = 'rigth'
 
     def moverAuto(self):
-        if self.rect.bottom > LIMITHEIGHTGROUND:
-            self.falling = False
+        # if self.rect.bottom > LIMITHEIGHTGROUND:
+        #     self.falling = False
         if self.falling:
             self.rect.move_ip(0, GRAVITY)
 
@@ -82,12 +82,11 @@ class Bug(pygame.sprite.Sprite):
                 self.rect.move_ip(ENEMYVELOCITY, 0)
 
     def createBullet(self, spriteGroup):
-        if self.currentFacing == 'left':
-            spriteGroup.add(Bullet([spriteGroup], self.x - self.width/3, self.y + self.height/10,
+        if self.falling == False:
+            for group in spriteGroup:
+                group.add(Bullet([spriteGroup], self.rect.centerx, self.rect.centery,
                                    5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
-        else:
-            spriteGroup.add(Bullet([spriteGroup], self.x + self.width/3, self.y + self.height/10,
-                                   5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
+
 
     def setImage(self, image):
         self.image = pygame.transform.scale(image, (self.width, self.height))

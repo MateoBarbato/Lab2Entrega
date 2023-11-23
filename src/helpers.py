@@ -18,9 +18,9 @@ def exit():
 
 def randIntPos(axis, axisSize):
     if axis == 'x':
-        return randint(axisSize, SCREENWIDTH-axisSize)
+        return randint(axisSize, LIMITWIDTHGROUND-axisSize)
     else:
-        return randint(axisSize, SCREENHEIGHT-axisSize)
+        return randint(axisSize, LIMITHEIGHTGROUND-axisSize)
 
 
 def createScreen():

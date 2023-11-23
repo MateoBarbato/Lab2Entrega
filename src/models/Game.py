@@ -30,13 +30,12 @@ class Game:
                              2, SCREENHEIGHT/2, PLAYERWIDTH, PLAYERHEIGHT, self.screen)
 
         self.plataformas.add(Platform(
-            [self.allSprites, self.plataformas], 850, 150, 0, SCREENHEIGHT), Platform([self.allSprites, self.plataformas], 300, 40, 850, 760))
-        # self.bug = Bug([self.shooterEnemy], randIntPos('x', 60),
-        #                randIntPos('y', 60), BUGSIZE, BUGSIZE, self.screen)
-        self.enemiesSprites.add(Bug([self.allSprites, self.enemiesSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
-                                BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
-        self.shooterEnemy.add(BugStatic([self.shooterEnemy, self.allSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
+            [self.allSprites, self.plataformas], 875, 150, 0, 650), Platform([self.allSprites, self.plataformas], 300, 40, 850, 760))
+        
+        self.enemiesSprites.add(Bug([self.allSprites, self.enemiesSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND/2,
+                                BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'),BugStatic([self.enemiesSprites, self.allSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND/2,
                                         BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
+        # self.shooterEnemy.add()
         self.muteState = mainMenu(self.screen, self.muteState)
         self.run()
 
@@ -78,10 +77,10 @@ class Game:
                     if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                         self.player.dance = False
             # BLIT Z
-            if len(self.shooterEnemy) < 3:
+            if len(self.enemiesSprites) < 3:
                 self.generateEnemiesRandom()
 
-            if len(self.shooterEnemy) != 0:
+            if len(self.enemiesSprites) != 0:
                 self.timedSequence()
 
             self.draw()
@@ -91,14 +90,14 @@ class Game:
     def generateEnemiesRandom(self):
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdate > 1500:
-            self.shooterEnemy.add(BugStatic([self.shooterEnemy, self.allSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND-BUGSIZE/2,
+            self.enemiesSprites.add(BugStatic([self.enemiesSprites, self.allSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND/2,
                                             BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
             self.lastUpdate = currentTime
 
     def timedSequence(self):
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdateShooting > 2000:
-            for bug in self.shooterEnemy:
+            for bug in self.enemiesSprites:
                 bug.createBullet([self.bullets, self.allSprites])
             self.lastUpdateShooting = currentTime
 
@@ -106,18 +105,30 @@ class Game:
         drawBackground(self.screen, BACKGROUNDLEVEL1)
         self.allSprites.draw(self.screen)
 
-        for platform in self.plataformas:
-            plataformaON = pygame.sprite.collide_rect(
-                self.player, platform)
-            if plataformaON:
-                print(plataformaON)
+        # for platform in self.plataformas:
+        #     plataformaON = pygame.sprite.collide_rect(
+        #         self.player, platform)
+        plataformaONPlayer = pygame.sprite.spritecollideany(self.player,self.plataformas)
+        if plataformaONPlayer:
                 self.player.falling = False
+        elif self.player.jumping == False:
+            self.player.falling = True
+
+        for enemy in self.enemiesSprites:
+            plataformaONEnemies = pygame.sprite.spritecollideany(enemy,self.plataformas)
+            if plataformaONEnemies:
+                enemy.falling = False
+                
+            else:
+                enemy.falling = True
+        
 
         for bullet in self.bullets:
             bulletColisioned = pygame.sprite.collide_mask(self.player, bullet)
             if bulletColisioned:
                 bullet.isKilled = True
-        for enemy in self.shooterEnemy:
+
+        for enemy in self.enemiesSprites:
             colisionTrue = pygame.sprite.collide_mask(self.player, enemy)
             if colisionTrue:
                 enemy.kill()

@@ -75,10 +75,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.x = self.rect.x + self.movex
 
         if self.falling == True:
-            if self.rect.bottom < LIMITHEIGHTGROUND:
                 self.rect.y = self.rect.y + PLAYERVELOCITY*1.5
-            else:
-                self.falling = False
         elif self.jumping:
             self.distanceTotal += self.movey
             if self.distanceTotal < JUMPMAXHEIGH:

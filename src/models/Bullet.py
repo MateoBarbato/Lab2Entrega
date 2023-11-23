@@ -65,14 +65,14 @@ class Bullet(pygame.sprite.Sprite):
         else:
             if self.currentFacing == 'left':
                 if self.rect.x > BLOCKWIDTH:
-                    self.rect.move_ip(-self.speed, 0)
+                    self.rect.x += -self.speed
                     self.animateDirection('left')
                 else:
                     self.isKilled = True
 
             if self.currentFacing == 'rigth':
                 if self.rect.x < LIMITWIDTHGROUND - self.width:
-                    self.rect.move_ip(self.speed, 0)
+                    self.rect.x += self.speed
                     self.animateDirection('rigth')
                 else:
                     self.isKilled = True
