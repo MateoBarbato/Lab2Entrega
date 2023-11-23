@@ -86,7 +86,6 @@ class Player(pygame.sprite.Sprite):
                 self.distanceTotal = 0
                 self.falling = True
             else:
-
                 self.rect.y = self.rect.y + self.movey
 
     def draw(self):

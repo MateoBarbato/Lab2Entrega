@@ -94,7 +94,6 @@ def mainMenu(screen, muteValue: bool):
                         return
                     if ButtonExit.buttonPressed():
                         exit()
-    
 
 
 def optionMenu(screen, muteValue: bool):
@@ -110,20 +109,19 @@ def optionMenu(screen, muteValue: bool):
     ButtonCredits.CreateButtonMenu()
 
     ButtonMute = Button(BUTTONWIDTH, BUTTONHEIGHT,
-                        (SCREENWIDTH)/2, (SCREENHEIGHT)/2, 'Mute On', screen,colorText=GREEN)
+                        (SCREENWIDTH)/2, (SCREENHEIGHT)/2, 'Mute Off', screen, colorText=GREEN)
     ButtonMute.CreateButtonMenu()
     pygame.display.flip()
-    
+
     while True:
-        if muteValue == False or muteValue == None and ButtonMute.buttonPressed():
+        if muteValue == False or muteValue == None:
             # ButtonMute.colorText = GREEN
-            ButtonMute.setText('Mute On',GREEN)
+            ButtonMute.setText('Mute On', RED)
             # ButtonMute.CreateButtonMenu()
-            
-            
         else:
             # ButtonMute.colorText = RED
-            ButtonMute.setText('Mute Off',RED)
+
+            ButtonMute.setText('Mute Off', GREEN)
             # ButtonMute.CreateButtonMenu()
             # pygame.display.flip()
 
@@ -145,6 +143,7 @@ def optionMenu(screen, muteValue: bool):
                         muteValue = not muteValue
                         ButtonMute.CreateButtonMenu()
                         pygame.display.flip()
+
 
 def creditsMenu(screen, muteValue: bool):
     background = BACKGROUNSEANIGHT
@@ -196,10 +195,10 @@ def levelSelector(screen, muteValue):
     drawBackground(screen, BRACKGROUNDTREES)
 
     ButtonCross = Button(40, 40, 150, 120,
-                        'X', screen, colorbackground=LAVENDER,fontSize=20)
+                         'X', screen, colorbackground=LAVENDER, fontSize=20)
     Level1 = Button(120, 120, SCREENWIDTH/2,
                     SCREENHEIGHT/3, 'Level 1', screen)
-    
+
     Level1.CreateButtonMenu()
     ButtonCross.CreateButtonMenu(borderRadius=5)
     pygame.display.flip()

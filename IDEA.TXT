@@ -14,3 +14,8 @@
             self.rect.move_ip(PLAYERVELOCITY, 0)
         else:
             pass
+
+
+            875 x 150
+
+            850 x 760 pos 300 w 40 h

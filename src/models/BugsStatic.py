@@ -46,15 +46,12 @@ class BugStatic(pygame.sprite.Sprite):
         return (x, y)
 
     def delBug(self):
-        del self        
+        del self
 
     def createBullet(self, spriteGroup):
-        if self.currentFacing == 'left':
-            spriteGroup.add(Bullet([spriteGroup], self.x - self.width/3, self.y + self.height/10,
-                                   5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
-        else:
-            spriteGroup.add(Bullet([spriteGroup], self.x + self.width/3, self.y + self.height/10,
-                                   5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
+        for group in spriteGroup:
+            group.add(Bullet([spriteGroup], self.x - self.width/3, self.y + self.height/10,
+                             5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
 
     def setImage(self, image):
         self.image = pygame.transform.scale(image, (self.width, self.height))
