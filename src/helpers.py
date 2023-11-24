@@ -90,7 +90,7 @@ def mainMenu(screen, muteValue: bool):
                 if event.button == 1:
                     if ButtonStart.buttonPressed():
                         # enviar al usuario al level selector
-                        return levelSelector(screen, muteValue)
+                        return (muteValue, False)
                         # return muteValue
                     if ButtonOptions.buttonPressed():
                         optionMenu(screen, muteValue)
@@ -218,28 +218,15 @@ def levelSelector(screen, muteValue):
                     if Level1.buttonPressed():
                         # enviar al usuario al level selector
                         # print('asd')
-                        return muteValue
+                        return True, ('level1')
                     # if ButtonOptions.buttonPressed():
                     #     return
                     if ButtonCross.buttonPressed():
-                        mainMenu(screen, False)
+                        return False, False
 
 
-def loadPlataformas(spriteGroupPlat, spriteGroupPoints, map):
+# def loadLevel(spriteGroupAll, map):
 
-    blockSize = 64
-    plataformas = pygame.sprite.Group()
-    points = pygame.sprite.Group()
-    for rowIndex, row in enumerate(map):
-        for colIndex, celda in enumerate(row):
-            if celda == '1':
-                x = colIndex * blockSize
-                y = rowIndex * blockSize
-                plataformas.add(Platform(spriteGroupPlat, (x, y), blockSize))
-            elif celda == 'P':
-                x = colIndex * blockSize
-                y = rowIndex * blockSize
-                points.add(Point(spriteGroupPoints, (x, y), blockSize))
 
-    # print(plataformas)
-    return plataformas, points
+#     # print(plataformas)
+#     return plataformas, points, player

@@ -3,42 +3,26 @@ from helpers import *
 from Config import *
 from colors import *
 from models.Game import Game
-
+from models.Level import Level
+from dataLevels import level_map1
 pygame.init()
-# Timers
-# Flags
-menu = 'main'
-# muteState = False
+screen = createScreen()
+clock = pygame.time.Clock()
 muteState = MUTESTATE
-powerUp1 = False
-cheatOn = False
-moveBugs = None
-createBug = False
+runMainMenu = True
+levelSelected = ''
+levelMap = None
+if runMainMenu:
+    muteState, runMainMenu = mainMenu(screen, muteState)
+if runMainMenu == False:
+    runMainMenu, levelSelected = levelSelector(screen, muteState)
+if levelSelected == 'level1':
+    levelMap = level_map1
 
-# Listsddd
-bugs = []
-
-# Timed events
-moveBugInterval = 650
-moveBugEvent = pygame.USEREVENT+1
-createBugInterval = 2500
-createBugEvent = pygame.USEREVENT+2
-
-# Loading assets
-
-playerImg = loadImage('totodyle.png')
-
-
-try:
-    screen = pygame.display.set_mode(SCREENSIZE)
-    screen.fill(WHITE, pygame.Rect(0, 0, SCREENWIDTH, SCREENHEIGHT))
-    pygame.display.set_caption("PokeBug")
-    pygame.display.set_icon(loadImage('totodyle.png'))
-except pygame.error as e:
-    errMsg(e)
+levelCanvas = Level(levelMap,
+                    BACKGROUNDLEVEL1, screen)
 
 while True:
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
@@ -46,4 +30,7 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 Game.quit()
                 exit()
-    Game()
+
+    levelCanvas.run()
+    pygame.display.update()
+    clock.tick(60)
