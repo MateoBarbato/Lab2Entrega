@@ -83,7 +83,3 @@ class Bullet(pygame.sprite.Sprite):
 
     def draw(self):
         self.screen.blit(self.image, self.rect)
-
-    def delete(self):
-        print('deletie bullet')
-        del self

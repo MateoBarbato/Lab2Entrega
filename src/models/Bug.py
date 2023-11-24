@@ -12,7 +12,6 @@ class Bug(pygame.sprite.Sprite):
     def __init__(self, groups, bulletsGroup, x: int, y: int, width: int, height: int, screen: pygame.display, typeElement: str, imageSheet: str = None) -> None:
         super().__init__(groups)
         self.groupsVar = groups
-        self.bugList = ['pokemon1.png', 'pokemon2.png', 'pokemon3.png']
         self.x = x
         self.y = y
         self.speed = 1
@@ -33,14 +32,14 @@ class Bug(pygame.sprite.Sprite):
         self.animationSpeed = ANIMATIONSPEED
         self.ammountOfFrames = SPRITEBUGCOL
         self.currentFacing = 'left'
-        self.randDir()
         self.bullets = bulletsGroup
         self.falling = True
         self.typeElement = typeElement
+        self.velocityX = ENEMYVELOCITY
+        self.randDir()
         # self.setRandomPos()
 
     def setRandomPos(self):
-        print(self.y)
         x = randint(0, LIMITWIDTHGROUND-self.width)
         y = self.y
         self.x = x
@@ -53,30 +52,33 @@ class Bug(pygame.sprite.Sprite):
     def randDir(self):
         if randint(0, 1) == 0:
             self.currentFacing = 'left'
+            self.velocityX = -2
         else:
             self.currentFacing = 'rigth'
+            self.velocityX = 2
 
     def moverAuto(self):
         # if self.rect.bottom > LIMITHEIGHTGROUND:
         #     self.falling = False
         if self.falling:
-            self.rect.move_ip(0, GRAVITY)
+            self.rect.y += GRAVITY
 
         if self.falling == False:
-            if self.rect.left < BLOCKWIDTH:
-                print('pared izq')
-                # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
-                self.currentFacing = 'rigth'
-            elif self.rect.right > LIMITWIDTHGROUND:
-                print('pared derecha')
-                # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
-                self.currentFacing = 'left'
+            # if self.rect.left < BLOCKWIDTH:
+            #     print('pared izq')
+            #     # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
+            #     self.currentFacing = 'rigth'
+            # elif self.rect.right > LIMITWIDTHGROUND:
+            #     print('pared derecha')
+            #     # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
+            #     self.currentFacing = 'left'
+
             if self.currentFacing == 'left':
                 self.animateDirection()
-                self.rect.move_ip(-ENEMYVELOCITY, 0)
+                self.rect.x += self.velocityX
             elif self.currentFacing == 'rigth':
                 self.animateDirection()
-                self.rect.move_ip(ENEMYVELOCITY, 0)
+                self.rect.x -= self.velocityX
 
     def createBullet(self, spriteGroup):
         if self.falling == False:

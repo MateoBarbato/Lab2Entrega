@@ -12,7 +12,6 @@ class BugStatic(pygame.sprite.Sprite):
     def __init__(self, groups, bulletsGroup, x: int, y: int, width: int, height: int, screen: pygame.display, imageSheet: str = None) -> None:
         super().__init__(groups)
         self.groupsVar = groups
-        self.bugList = ['pokemon1.png', 'pokemon2.png', 'pokemon3.png']
         self.x = x
         self.y = y
         self.speed = 1
@@ -35,10 +34,10 @@ class BugStatic(pygame.sprite.Sprite):
         self.currentFacing = 'left'
         self.bullets = bulletsGroup
         self.falling = True
+        self.velocityX = 0
         # self.setRandomPos()
 
     def setRandomPos(self):
-        print(self.y)
         x = randint(0, LIMITWIDTHGROUND-self.width)
         y = self.y
         self.x = x

@@ -20,7 +20,6 @@ class Game:
         self.muteState = MUTESTATE
 
         self.allSprites = pygame.sprite.Group()
-        self.shooterEnemy = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.plataformas = pygame.sprite.Group()
         self.enemiesSprites = pygame.sprite.Group()
@@ -29,11 +28,11 @@ class Game:
         self.player = Player([self.allSprites, self.playerSprite],
                              1088, 640, PLAYERWIDTH, PLAYERHEIGHT, self.screen)
 
-        self.plataformasPiso = loadPlataformas(
-            [self.allSprites, self.plataformas], level_map1)
+        self.plataformasPiso, self.points = loadPlataformas(
+            [self.allSprites, self.plataformas], [self.allSprites], level_map1)
 
-        # self.shooterEnemy.add()
         self.muteState = mainMenu(self.screen, self.muteState)
+
         self.run()
 
     # def createBug():
@@ -137,6 +136,16 @@ class Game:
                 bullet, self.plataformas)
             if bulletColisionedPlayer or bulletCollisionedWall:
                 bullet.isKilled = True
+            if bulletColisionedPlayer:
+                gameState = self.player.getHit()
+                if gameState:
+                    self.gameRunning = False
+
+        for point in self.points:
+            pointCollided = pygame.sprite.collide_mask(
+                self.player, point)
+            if pointCollided:
+                point.isKilled = True
 
         for enemy in self.enemiesSprites:
             colisionTrue = pygame.sprite.collide_mask(self.player, enemy)

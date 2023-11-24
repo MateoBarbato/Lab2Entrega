@@ -48,3 +48,16 @@
 
 
 grid 18/2 filas 12/2 columnas o 19 y 13
+
+
+
+
+or plataforma in self.plataformas:
+                if plataforma.rect.colliderect(enemy.rect):
+                    print('asd')
+                    if enemy.velocityX < 0:
+                        enemy.currentFacing = 'rigth'
+                        enemy.velocityX = 2
+                    elif enemy.velocityX > 0:
+                        enemy.currentFacing = 'left'
+                        enemy.velocityX = -2

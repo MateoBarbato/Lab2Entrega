@@ -9,6 +9,3 @@ class Platform (pygame.sprite.Sprite):
         # self.rect = self.image.get_rect(topleft=pos)
         self.rect = self.image.get_rect(topleft=pos)
         # self.image.fill((190, 190, 0))
-
-    def draw(self):
-        self.screen.blit(self.image, self.rect)

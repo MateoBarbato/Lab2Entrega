@@ -7,6 +7,7 @@ from models.BugsStatic import BugStatic
 from models.Bullet import Bullet
 from models.Button import Button
 from models.Platform import Platform
+from models.Point import Point
 from models.Text import Text
 from colors import *
 from Config import *
@@ -224,16 +225,21 @@ def levelSelector(screen, muteValue):
                         mainMenu(screen, False)
 
 
-def loadPlataformas(spriteGroup, map):
+def loadPlataformas(spriteGroupPlat, spriteGroupPoints, map):
 
     blockSize = 64
     plataformas = pygame.sprite.Group()
+    points = pygame.sprite.Group()
     for rowIndex, row in enumerate(map):
         for colIndex, celda in enumerate(row):
             if celda == '1':
                 x = colIndex * blockSize
                 y = rowIndex * blockSize
-                plataformas.add(Platform(spriteGroup, (x, y), blockSize))
+                plataformas.add(Platform(spriteGroupPlat, (x, y), blockSize))
+            elif celda == 'P':
+                x = colIndex * blockSize
+                y = rowIndex * blockSize
+                points.add(Point(spriteGroupPoints, (x, y), blockSize))
 
     # print(plataformas)
-    return plataformas
+    return plataformas, points

@@ -25,7 +25,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.screen = screen
         self.lastUpdate = pygame.time.get_ticks()
-
+        self.lastUpdateVidas = pygame.time.get_ticks()
         # PLAYER MOVEMENT
         self.direction = pygame.math.Vector2(0, 0)
         self.falling = True
@@ -48,6 +48,18 @@ class Player(pygame.sprite.Sprite):
     def setImage(self, image):
         self.image = pygame.transform.scale(image, (self.width, self.height))
         return self.image
+
+    def getHit(self):
+        currentTime = pygame.time.get_ticks()
+        if self.lives > 0:
+            if currentTime - self.lastUpdateVidas > ANIMATIONSPEED*4:
+                self.lives -= 1
+                print(self.lives)
+                self.lastUpdateVidas = currentTime
+
+        else:
+            print('Matado')
+            return True
 
     def animateDirection(self, key: str):
         currentTime = pygame.time.get_ticks()
