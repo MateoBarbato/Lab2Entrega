@@ -1,5 +1,5 @@
 import pygame
-from Config import ANIMATIONSPEED, BLOCKWIDTH, LIMITWIDTHGROUND, SCREENWIDTH, SPIRTESIZEMAINHEIGHT, SPIRTESIZEMAINWIDTH, SPRITEBUGCOL, loadImage
+from Config import ANIMATIONSPEED, BLOCKWIDTH, BULLETPLANT, BULLETWATER, LIMITWIDTHGROUND, SCREENWIDTH, SPIRTESIZEMAINHEIGHT, SPIRTESIZEMAINWIDTH, SPRITEBUGCOL, loadImage
 
 from spriteSheet import loadSprites
 
@@ -19,7 +19,11 @@ class Bullet(pygame.sprite.Sprite):
         self.ammountOfFrames = SPRITEBUGCOL
         self.spriteKeys = ['left', 'rigth', 'dying']
         if type == 'plant':
-            self.sheet = loadImage('plantBullet.png')
+            self.sheet = BULLETPLANT
+            self.animations = loadSprites(
+                self.sheet, 32, 32, 3, 4, self.spriteKeys)
+        elif type == 'water':
+            self.sheet = BULLETWATER
             self.animations = loadSprites(
                 self.sheet, 32, 32, 3, 4, self.spriteKeys)
         self.image = self.setImage(

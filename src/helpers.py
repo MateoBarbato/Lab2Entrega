@@ -1,10 +1,12 @@
 from ast import main
+from json import load
 from random import randint
 import pygame
 import sys
 from models.BugsStatic import BugStatic
 from models.Bullet import Bullet
 from models.Button import Button
+from models.Platform import Platform
 from models.Text import Text
 from colors import *
 from Config import *
@@ -220,3 +222,18 @@ def levelSelector(screen, muteValue):
                     #     return
                     if ButtonCross.buttonPressed():
                         mainMenu(screen, False)
+
+
+def loadPlataformas(spriteGroup, map):
+
+    blockSize = 64
+    plataformas = pygame.sprite.Group()
+    for rowIndex, row in enumerate(map):
+        for colIndex, celda in enumerate(row):
+            if celda == '1':
+                x = colIndex * blockSize
+                y = rowIndex * blockSize
+                plataformas.add(Platform(spriteGroup, (x, y), blockSize))
+
+    # print(plataformas)
+    return plataformas

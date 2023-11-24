@@ -26,15 +26,12 @@ class Game:
         self.enemiesSprites = pygame.sprite.Group()
         self.playerSprite = pygame.sprite.Group()
         self.animationSpeed = ANIMATIONSPEED
-        self.player = Player([self.allSprites, self.playerSprite], SCREENWIDTH /
-                             2, SCREENHEIGHT/2, PLAYERWIDTH, PLAYERHEIGHT, self.screen)
+        self.player = Player([self.allSprites, self.playerSprite],
+                             1088, 640, PLAYERWIDTH, PLAYERHEIGHT, self.screen)
 
-        self.plataformas.add(Platform(
-            [self.allSprites, self.plataformas], 875, 150, 0, 650), Platform([self.allSprites, self.plataformas], 300, 40, 850, 760))
-        
-        self.enemiesSprites.add(Bug([self.allSprites, self.enemiesSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND/2,
-                                BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'),BugStatic([self.enemiesSprites, self.allSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND/2,
-                                        BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
+        self.plataformasPiso = loadPlataformas(
+            [self.allSprites, self.plataformas], level_map1)
+
         # self.shooterEnemy.add()
         self.muteState = mainMenu(self.screen, self.muteState)
         self.run()
@@ -43,7 +40,6 @@ class Game:
 
     def run(self):
         self.gameRunning = True
-
         while self.gameRunning:
 
             for event in pygame.event.get():
@@ -53,36 +49,16 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         self.quit()
                         exit()
-                    if event.key == pygame.K_a:
-                        self.player.control(-PLAYERVELOCITY, 0)
-                        self.player.currentFacing = 'left'
-                    if event.key == pygame.K_d:
-                        self.player.control(PLAYERVELOCITY, 0)
-                        self.player.currentFacing = 'rigth'
-                    if event.key == pygame.K_w:
-                        self.player.control(0, -(PLAYERVELOCITY))
-                        self.player.jumping = True
                     if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                         self.player.dance = True
+                    if event.key == pygame.K_SPACE:
+                        self.player.rect.x = LIMITWIDTHGROUND/2
+                        self.player.rect.y = LIMITHEIGHTGROUND/2
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_a:
-                        self.player.control(PLAYERVELOCITY, 0)
-                        self.player.currentFacing = 'down'
-                    if event.key == pygame.K_d:
-                        self.player.control(-PLAYERVELOCITY, 0)
-                        self.player.currentFacing = 'down'
-                    if event.key == pygame.K_w:
-                        self.player.control(0, PLAYERVELOCITY)
-                        self.player.falling = True
                     if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                         self.player.dance = False
-            # BLIT Z
-            if len(self.enemiesSprites) < 3:
-                self.generateEnemiesRandom()
 
-            if len(self.enemiesSprites) != 0:
-                self.timedSequence()
-
+            self.update()
             self.draw()
 
             pygame.display.flip()
@@ -90,50 +66,87 @@ class Game:
     def generateEnemiesRandom(self):
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdate > 1500:
-            self.enemiesSprites.add(BugStatic([self.enemiesSprites, self.allSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND/2,
-                                            BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'))
+            if len(self.enemiesSprites) == 0:
+                self.enemiesSprites.add(
+                    Bug([self.allSprites, self.enemiesSprites], [self.bullets], randIntPos('x', 80), LIMITHEIGHTGROUND/2,
+                        BUGSIZE, BUGSIZE, self.screen, 'water', SPRITECANGREJO),
+
+                    BugStatic([self.enemiesSprites, self.allSprites], [self.bullets], 96, 600,
+                              BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png'),
+                    BugStatic([self.enemiesSprites, self.allSprites], [self.bullets], 1110, 400,
+                              BUGSIZE, BUGSIZE, self.screen, 'pokemon4.png')
+                )
             self.lastUpdate = currentTime
+
+    def horizontal_movement_colission(self):
+        player = self.player
+        player.rect.x += player.direction.x
+
+        for plataforma in self.plataformas:
+            if plataforma.rect.colliderect(player.rect):
+                if player.direction.x < 0:
+                    player.rect.left = plataforma.rect.right
+                elif player.direction.x > 0:
+                    player.rect.right = plataforma.rect.left
+
+    def vertical_movement_colission(self):
+        player = self.player
+        player.apply_gravity()
+
+        for plataforma in self.plataformas:
+            if plataforma.rect.colliderect(player.rect):
+                if player.direction.y > 0:
+                    player.rect.bottom = plataforma.rect.top
+                    player.direction.y = 0
+                    player.onGround = True
+                    player.jumpCount = 0
+                elif player.direction.y < 0:
+                    player.rect.top = plataforma.rect.bottom
+                    player.direction.y = 0
 
     def timedSequence(self):
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdateShooting > 2000:
-            for bug in self.enemiesSprites:
-                bug.createBullet([self.bullets, self.allSprites])
-            self.lastUpdateShooting = currentTime
+            if len(self.enemiesSprites) != 0:
+                for bug in self.enemiesSprites:
+                    bug.createBullet([self.bullets, self.allSprites])
+                self.lastUpdateShooting = currentTime
 
-    def draw(self):
-        drawBackground(self.screen, BACKGROUNDLEVEL1)
-        self.allSprites.draw(self.screen)
+    def update(self):
+        self.allSprites.update()
+        self.vertical_movement_colission()
+        self.horizontal_movement_colission()
 
-        # for platform in self.plataformas:
-        #     plataformaON = pygame.sprite.collide_rect(
-        #         self.player, platform)
-        plataformaONPlayer = pygame.sprite.spritecollideany(self.player,self.plataformas)
-        if plataformaONPlayer:
-                self.player.falling = False
-        elif self.player.jumping == False:
-            self.player.falling = True
+        # BLIT Z
+
+        self.generateEnemiesRandom()
+        self.timedSequence()
 
         for enemy in self.enemiesSprites:
-            plataformaONEnemies = pygame.sprite.spritecollideany(enemy,self.plataformas)
+            plataformaONEnemies = pygame.sprite.spritecollideany(
+                enemy, self.plataformas)
             if plataformaONEnemies:
                 enemy.falling = False
-                
             else:
                 enemy.falling = True
-        
 
         for bullet in self.bullets:
-            bulletColisioned = pygame.sprite.collide_mask(self.player, bullet)
-            if bulletColisioned:
+            bulletColisionedPlayer = pygame.sprite.collide_mask(
+                self.player, bullet)
+            bulletCollisionedWall = pygame.sprite.spritecollideany(
+                bullet, self.plataformas)
+            if bulletColisionedPlayer or bulletCollisionedWall:
                 bullet.isKilled = True
 
         for enemy in self.enemiesSprites:
             colisionTrue = pygame.sprite.collide_mask(self.player, enemy)
             if colisionTrue:
                 enemy.kill()
+                self.player.lives -= 1
 
-        self.allSprites.update()
+    def draw(self):
+        drawBackground(self.screen, BACKGROUNDLEVEL1)
+        self.allSprites.draw(self.screen)
 
     def quit(self):
         self.gameRunning = False

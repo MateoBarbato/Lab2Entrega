@@ -1,6 +1,7 @@
 from random import randint
+from re import S
 import pygame
-from Config import BULLETSIZE, ENEMYVELOCITY, GRAVITY, LIMITHEIGHTGROUND, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, BLOCKWIDTH, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
+from Config import BULLETSIZE, ENEMYVELOCITY, GRAVITY, LIMITHEIGHTGROUND, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, BLOCKWIDTH, SPRITEBUGSIZE, ANIMATIONSPEED, SPRITECANGREJO, loadImage
 from models.Bullet import Bullet
 
 from spriteSheet import loadSprites
@@ -8,7 +9,7 @@ from spriteSheet import loadSprites
 
 class Bug(pygame.sprite.Sprite):
 
-    def __init__(self, groups, bulletsGroup, x: int, y: int, width: int, height: int, screen: pygame.display, imageSheet: str = None) -> None:
+    def __init__(self, groups, bulletsGroup, x: int, y: int, width: int, height: int, screen: pygame.display, typeElement: str, imageSheet: str = None) -> None:
         super().__init__(groups)
         self.groupsVar = groups
         self.bugList = ['pokemon1.png', 'pokemon2.png', 'pokemon3.png']
@@ -19,11 +20,7 @@ class Bug(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.currentFrame = 0
-        if imageSheet:
-            self.sheet = loadImage(imageSheet)
-        else:
-            self.imageIndex = randint(0, 2)
-            self.sheet = loadImage(self.bugList[self.imageIndex])
+        self.sheet = imageSheet
         self.spriteKeys = ['down', 'rigth', 'left']
         self.animations = loadSprites(
             self.sheet, SPRITEBUGSIZE, SPRITEBUGSIZE, SPRITEBUGROW, SPRITEBUGCOL, self.spriteKeys)
@@ -32,7 +29,6 @@ class Bug(pygame.sprite.Sprite):
         self.rect.center = self.pos
         self.mask = pygame.mask.from_surface(self.image)
         self.screen = screen
-        self.isBlited = False
         self.lastUpdate = pygame.time.get_ticks()
         self.animationSpeed = ANIMATIONSPEED
         self.ammountOfFrames = SPRITEBUGCOL
@@ -40,6 +36,7 @@ class Bug(pygame.sprite.Sprite):
         self.randDir()
         self.bullets = bulletsGroup
         self.falling = True
+        self.typeElement = typeElement
         # self.setRandomPos()
 
     def setRandomPos(self):
@@ -85,8 +82,7 @@ class Bug(pygame.sprite.Sprite):
         if self.falling == False:
             for group in spriteGroup:
                 group.add(Bullet([spriteGroup], self.rect.centerx, self.rect.centery,
-                                   5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
-
+                                 5, (BULLETSIZE, BULLETSIZE), self.typeElement, self.currentFacing))
 
     def setImage(self, image):
         self.image = pygame.transform.scale(image, (self.width, self.height))

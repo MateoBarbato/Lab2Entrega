@@ -1,7 +1,7 @@
 from random import randint
 from tarfile import BLOCKSIZE
 import pygame
-from Config import BULLETSIZE, ENEMYVELOCITY, GRAVITY, LIMITHEIGHTGROUND, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
+from Config import BULLETSIZE, ENEMYVELOCITY, GRAVITY, LIMITHEIGHTGROUND, LIMITWIDTHGROUND, SCREENHEIGHT, SCREENWIDTH, SPRITEBELLSPROUT, SPRITEBUGCOL, SPRITEBUGROW, SPRITEBUGSIZE, ANIMATIONSPEED, loadImage
 from models.Bullet import Bullet
 
 from spriteSheet import loadSprites
@@ -20,7 +20,7 @@ class BugStatic(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.currentFrame = 0
-        self.sheet = loadImage(imageSheet)
+        self.sheet = SPRITEBELLSPROUT
         self.spriteKeys = ['down', 'rigth', 'left']
         self.animations = loadSprites(
             self.sheet, SPRITEBUGSIZE, SPRITEBUGSIZE, SPRITEBUGROW, SPRITEBUGCOL, self.spriteKeys)
@@ -29,7 +29,6 @@ class BugStatic(pygame.sprite.Sprite):
         self.rect.center = self.pos
         self.mask = pygame.mask.from_surface(self.image)
         self.screen = screen
-        self.isBlited = False
         self.lastUpdate = pygame.time.get_ticks()
         self.animationSpeed = ANIMATIONSPEED
         self.ammountOfFrames = SPRITEBUGCOL
@@ -53,7 +52,8 @@ class BugStatic(pygame.sprite.Sprite):
         if self.falling == False:
             for group in spriteGroup:
                 group.add(Bullet([spriteGroup], self.rect.centerx, self.rect.centery,
-                                5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
+                                 5, (BULLETSIZE, BULLETSIZE), 'plant', self.currentFacing))
+
     def setImage(self, image):
         self.image = pygame.transform.scale(image, (self.width, self.height))
         return self.image
