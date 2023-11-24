@@ -13,12 +13,14 @@ class Player(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.lives = 3
+        self.isAttacking = False
 
         self.currentFrame = 0
-        self.spriteKeys = ['down', 'rigth', 'left', 'dance', 'knee']
-        self.sheet = loadImage('LucasSprite.png')
+        self.spriteKeys = ['down', 'rigth', 'left',
+                           'dance', 'knee', 'attackder', 'attackizq']
+        self.sheet = PLAYERSHEETATTACK
         self.animations = loadSprites(
-            self.sheet, SPIRTESIZEMAINWIDTH, SPIRTESIZEMAINHEIGHT, SPIRTEMAINROW, SPIRTEMAINCOL, self.spriteKeys)
+            self.sheet, SPIRTESIZEMAINWIDTH, SPIRTESIZEMAINHEIGHT, 7, SPIRTEMAINCOL, self.spriteKeys)
         self.image = self.setImage(self.animations['down'][self.currentFrame])
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
@@ -56,14 +58,20 @@ class Player(pygame.sprite.Sprite):
                 self.lives -= 1
                 print(self.lives)
                 self.lastUpdateVidas = currentTime
-
         else:
             print('Matado')
             return True
 
+    def attack(self):
+
+        if self.currentFacing == 'rigth':
+            self.animateDirection('attackder')
+        elif self.currentFacing == 'left':
+            self.animateDirection('attackizq')
+
     def animateDirection(self, key: str):
         currentTime = pygame.time.get_ticks()
-        if currentTime - self.lastUpdate > ANIMATIONSPEED:
+        if currentTime - self.lastUpdate > ANIMATIONSPEED/2:
             self.setImage(
                 self.animations[key][self.currentFrame])
             self.currentFrame += 1
@@ -81,11 +89,23 @@ class Player(pygame.sprite.Sprite):
 
     def get_inputs(self):
         keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_SPACE]:
+            self.attack()
+            self.isAttacking = True
+        else:
+            self.isAttacking = False
+
         if keys[pygame.K_d]:
             self.direction.x = PLAYERVELOCITY
+            self.currentFacing = 'rigth'
+            self.animateDirection('rigth')
         elif keys[pygame.K_a]:
             self.direction.x = -PLAYERVELOCITY
+            self.currentFacing = 'left'
+            self.animateDirection('left')
         else:
+            self.animateDirection('down')
             self.direction.x = 0
 
         if keys[pygame.K_w] and self.onGround:

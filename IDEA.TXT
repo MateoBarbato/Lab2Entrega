@@ -61,3 +61,19 @@ or plataforma in self.plataformas:
                     elif enemy.velocityX > 0:
                         enemy.currentFacing = 'left'
                         enemy.velocityX = -2
+
+
+
+
+
+
+
+
+
+                            def attack(self):
+
+        if self.currentFacing == 'rigth':
+            pygame.draw.rect(self.screen, (0, 250, 250), pygame.rect.Rect(
+                self.rect.centerx, self.rect.centery, PLAYERWIDTH*4, PLAYERHEIGHT))
+        elif self.currentFacing == 'left':
+            self.animateDirection('attackizq')

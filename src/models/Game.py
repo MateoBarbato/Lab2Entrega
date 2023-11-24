@@ -40,7 +40,6 @@ class Game:
     def run(self):
         self.gameRunning = True
         while self.gameRunning:
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
@@ -50,9 +49,7 @@ class Game:
                         exit()
                     if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                         self.player.dance = True
-                    if event.key == pygame.K_SPACE:
-                        self.player.rect.x = LIMITWIDTHGROUND/2
-                        self.player.rect.y = LIMITHEIGHTGROUND/2
+                        pass
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                         self.player.dance = False
@@ -134,24 +131,31 @@ class Game:
                 self.player, bullet)
             bulletCollisionedWall = pygame.sprite.spritecollideany(
                 bullet, self.plataformas)
+
             if bulletColisionedPlayer or bulletCollisionedWall:
                 bullet.isKilled = True
             if bulletColisionedPlayer:
                 gameState = self.player.getHit()
                 if gameState:
                     self.gameRunning = False
-
-        for point in self.points:
-            pointCollided = pygame.sprite.collide_mask(
-                self.player, point)
-            if pointCollided:
-                point.isKilled = True
+        if len(self.points) != 0:
+            for point in self.points:
+                pointCollided = pygame.sprite.collide_mask(
+                    self.player, point)
+                if pointCollided:
+                    point.isKilled = True
+        else:
+            print('Level Completed')
 
         for enemy in self.enemiesSprites:
             colisionTrue = pygame.sprite.collide_mask(self.player, enemy)
             if colisionTrue:
-                enemy.kill()
-                self.player.lives -= 1
+
+                if self.player.isAttacking == True:
+                    enemy.kill()
+                else:
+                    enemy.kill()
+                    self.player.lives -= 1
 
     def draw(self):
         drawBackground(self.screen, BACKGROUNDLEVEL1)
