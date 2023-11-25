@@ -1,4 +1,3 @@
-
 import math
 import pygame
 from Config import *
@@ -19,28 +18,20 @@ class Player(pygame.sprite.Sprite):
         self.isAttacking = False
 
         self.currentFrame = 0
-        self.currentFrameAttack = 0
         self.spriteKeys = ['down', 'rigth', 'left',
-                           'dance', 'knee']
-        self.sheet = PLAYERSHEET
+                           'dance', 'knee', 'attackder', 'attackizq']
+        self.sheet = PLAYERSHEETATTACK
         self.animations = loadSprites(
-            self.sheet, SPIRTESIZEMAINWIDTH, SPIRTESIZEMAINHEIGHT, SPIRTEMAINROW, SPIRTEMAINCOL, self.spriteKeys)
+            self.sheet, SPIRTESIZEMAINWIDTH, SPIRTESIZEMAINHEIGHT, 7, SPIRTEMAINCOL, self.spriteKeys)
         self.image = self.setImage(self.animations['down'][self.currentFrame])
         self.rect = self.image.get_rect(topleft=(x, y))
-
-        self.attackImgsheet = loadImage('piña.png')
-        self.animationsAttack = loadSprites(
-            self.attackImgsheet, PLAYERWIDTH, PLAYERHEIGHT, 2, SPIRTEMAINCOL, ['right', 'left'])
-        self.attackImg = self.animationsAttack['right'][self.currentFrameAttack]
-
-        self.lastUpdateAttack = pygame.time.get_ticks()
-        # self.Attackcooldown = 300
         # self.rect.center = (self.x, self.y)
         self.mask = pygame.mask.from_surface(self.image)
         self.screen = screen
         self.lastUpdate = pygame.time.get_ticks()
         self.lastUpdateVidas = pygame.time.get_ticks()
-
+        self.lastUpdateAttack = pygame.time.get_ticks()
+        self.Attackcooldown = 300
         # PLAYER MOVEMENT
         self.direction = pygame.math.Vector2(0, 0)
         self.falling = True
@@ -55,49 +46,57 @@ class Player(pygame.sprite.Sprite):
         # self.jump_speed = -6.5
         self.onGround = True
         self.jumpCount = 0
-        self.isKilled = False
+        # 60 /s  64*3 1
+        # self.atackRightPos = (self.rect.right, self.rect.top)
+        # self.atackLeftPos = (self.rect.left-PLAYERWIDTH, self.rect.top)
         self.atackSprite = pygame.sprite.Group()
         self.isAttacking = False
-        self.attacking_rect = pygame.Rect(
-            self.rect.left, self.rect.top, PLAYERWIDTH, PLAYERHEIGHT)
+        # self.atackInstance = self.Attack(self.rect.topleft, self.screen)
+        # self.rectAttackder = self.Attack(
+        #     (self.rect.right, self.rect.top), self.screen)
+        # self.rectAttackizq = self.Attack(
+        #     (self.rect.left-PLAYERWIDTH, self.rect.top), self.screen)
 
     def setPlayerSpeed(self, speed=1.5):
         self.speedX = speed
 
     def setImage(self, image):
-        image = pygame.transform.scale(image, (self.width, self.height))
-        return image
+        self.image = pygame.transform.scale(image, (self.width, self.height))
+        return self.image
 
     def getHit(self):
         currentTime = pygame.time.get_ticks()
         if self.lives > 0:
             if currentTime - self.lastUpdateVidas > ANIMATIONSPEED*4:
                 self.lives -= 1
+                print(self.lives)
                 self.lastUpdateVidas = currentTime
         else:
-            self.isKilled = True
+            print('Matado')
+            return True
+
+    def attack(self):
+        self.isAttacking = True
+        if self.currentFacing == 'rigth':
+            self.animateDirection('attackder')
+            self.Attack(self.rect.topleft, self.screen, 'rigth')
+            # self.atackInstance.attackMele('rigth')
+
+        elif self.currentFacing == 'left':
+
+            self.animateDirection('attackizq')
+            self.Attack(self.rect.topleft, self.screen, 'left')
+            # self.atackInstance.attackMele('rigth')
 
     def animateDirection(self, key: str):
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdate > ANIMATIONSPEED:
-            self.image = pygame.transform.scale(
-                self.animations[key][self.currentFrame], (self.width, self.height))
+            self.setImage(
+                self.animations[key][self.currentFrame])
             self.currentFrame += 1
             if self.currentFrame == SPIRTEMAINCOL:
                 self.currentFrame = 0
             self.lastUpdate = currentTime
-
-    def animateDirectionAttack(self, key: str):
-        currentTime = pygame.time.get_ticks()
-        if currentTime - self.lastUpdateAttack > 150:
-            self.currentFrameAttack += 1
-            if self.currentFrameAttack == 4:
-                self.currentFrameAttack = 0
-                # self.isAttacking = False
-            self.attackImg = self.animationsAttack[key][self.currentFrameAttack]
-            self.attackImg = pygame.transform.scale(
-                self.attackImg, (self.width, self.height))
-            self.lastUpdateAttack = currentTime
 
     def apply_gravity(self):
         self.direction.y += self.gravity
@@ -107,28 +106,14 @@ class Player(pygame.sprite.Sprite):
         self.direction.y = self.jump_speed
         self.jumpCount += 1
 
-    def attack(self, direction):
-        if direction == 'rigth':
-            self.attacking_rect = pygame.Rect(
-                self.rect.right, self.rect.y, PLAYERWIDTH, PLAYERHEIGHT)
-            self.animateDirectionAttack('right')
-            self.screen.blit(self.attackImg, self.attacking_rect)
-        if direction == 'left':
-            self.attacking_rect = pygame.Rect(
-                self.rect.left - PLAYERWIDTH, self.rect.y, PLAYERWIDTH, PLAYERHEIGHT)
-            self.animateDirectionAttack('left')
-            self.screen.blit(self.attackImg, self.attacking_rect)
-
     def get_inputs(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE] == False:
-            self.isAttacking = False
 
         if keys[pygame.K_SPACE]:
-            self.attack(self.currentFacing)
+            self.attack()
             self.isAttacking = True
-            self.direction.x = 0
-            self.dance = False
+        else:
+            self.isAttacking = False
 
         if keys[pygame.K_d]:
             self.direction.x = PLAYERVELOCITY
@@ -139,7 +124,7 @@ class Player(pygame.sprite.Sprite):
             self.currentFacing = 'left'
             self.animateDirection('left')
         else:
-            # self.animateDirection('down')
+            self.animateDirection('down')
             self.direction.x = 0
 
         if keys[pygame.K_w] and self.onGround:
@@ -151,33 +136,42 @@ class Player(pygame.sprite.Sprite):
         else:
             self.dance = False
 
-        # if keys[pygame.K_SPACE]:
-        #     self.attack(self.currentFacing)
-        # if keys[pygame.K_d]:
-        #     self.direction.x = PLAYERVELOCITY
-        #     self.currentFacing = 'rigth'
-        #     self.animateDirection('rigth')
-        # elif keys[pygame.K_a]:
-        #     self.direction.x = -PLAYERVELOCITY
-        #     self.currentFacing = 'left'
-        #     self.animateDirection('left')
-        # else:
-        #     # self.animateDirection('down')
-        #     self.direction.x = 0
-
-        # if keys[pygame.K_w] and self.onGround:
-        #     if self.jumpCount < 2:
-        #         self.jump()
-
-        # if keys[pygame.K_LSHIFT]:
-        #     self.dance = True
-        # else:
-        #     self.dance = False
-
     def update(self):
+        self.atackRightPos = (self.rect.right, self.rect.top)
+        self.atackLeftPos = (self.rect.left-PLAYERWIDTH, self.rect.top)
         if self.dance == True:
             self.animateDirection('dance')
         self.get_inputs()
 
     def draw(self):
         self.screen.blit(self.image, self.rect)
+        # self.atackSprite.draw(self.screen)
+        self.atackInstance.draw(self.screen)
+
+    class Attack(pygame.sprite.Sprite):
+
+        def __init__(self, pos, screen, dir) -> None:
+            pygame.sprite.Sprite.__init__(self)
+            self.screen = screen
+            # self.direction = direction
+            self.image = pygame.transform.scale(
+                SPRITECANGREJO, (PLAYERWIDTH, PLAYERHEIGHT), pygame.Surface((PLAYERWIDTH, PLAYERHEIGHT)))
+            self.rectattack = self.image.get_rect(topleft=pos)
+            self.attackMele(dir)
+
+        def attackMele(self, dir):
+            if dir == 'left':
+                self.rectattack.centerx = self.rectattack.centerx - PLAYERWIDTH
+            else:
+                self.rectattack.centerx = self.rectattack.centerx + PLAYERWIDTH
+            self.draw()
+
+        def update(self):
+            pass
+
+        def updatePos(self):
+            pass
+
+        def draw(self):
+            pygame.draw.rect(self.screen, GREEN, self.rectattack)
+            # self.screen.blit(self.image, self.rect)

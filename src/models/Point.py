@@ -9,6 +9,7 @@ class Point(pygame.sprite.Sprite):
     def __init__(self, groups, pos, size) -> None:
         super().__init__(groups)
         self.size = size
+        self.pointsToAdd = 0
         self.randoType()
         self.key = ['idle']
         self.isKilled = False

@@ -201,8 +201,11 @@ def levelSelector(screen, muteValue):
                          'X', screen, colorbackground=LAVENDER, fontSize=20)
     Level1 = Button(120, 120, SCREENWIDTH/2,
                     SCREENHEIGHT/3, 'Level 1', screen)
+    Level2 = Button(120, 120, SCREENWIDTH/2,
+                    SCREENHEIGHT/2, 'Level 2', screen)
 
     Level1.CreateButtonMenu()
+    Level2.CreateButtonMenu()
     ButtonCross.CreateButtonMenu(borderRadius=5)
     pygame.display.flip()
     while True:
@@ -219,8 +222,8 @@ def levelSelector(screen, muteValue):
                         # enviar al usuario al level selector
                         # print('asd')
                         return True, ('level1')
-                    # if ButtonOptions.buttonPressed():
-                    #     return
+                    if Level2.buttonPressed():
+                        return True, ('level2')
                     if ButtonCross.buttonPressed():
                         return False, False
 

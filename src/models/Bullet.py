@@ -5,7 +5,6 @@ from spriteSheet import loadSprites
 
 
 class Bullet(pygame.sprite.Sprite):
-
     def __init__(self, groups, x, y, speed, size, type, currentFacing) -> None:
         super().__init__(groups)
         self.x = x
@@ -47,6 +46,7 @@ class Bullet(pygame.sprite.Sprite):
 
     def killanimated(self, key):
         self.currentFacing = 'dying'
+
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdateKilling > 250:
             self.setImage(self.animations[key][self.currentFrame])
