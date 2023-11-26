@@ -100,7 +100,6 @@ def mainMenu(screen, muteValue: bool):
 
 
 def optionMenu(screen, muteValue: bool):
-    print(muteValue)
     muteValue = muteValue
 
     drawBackground(screen, BACKGROUNSEADAY)
@@ -221,15 +220,54 @@ def levelSelector(screen, muteValue):
                     if Level1.buttonPressed():
                         # enviar al usuario al level selector
                         # print('asd')
-                        return True, ('level1')
+                        return True, 1
                     if Level2.buttonPressed():
-                        return True, ('level2')
+                        return True, 2
                     if ButtonCross.buttonPressed():
-                        return False, False
+                        return False, 0
 
 
 # def loadLevel(spriteGroupAll, map):
+def levelFinished(screen, background, currentLevel, lastScore):
+    drawBackground(screen, background)
 
+    Text('Your score', WHITE, 42, False).blitText(
+        screen, (SCREENWIDTH/2, SCREENHEIGHT/5), WHITE)
+    Text(str(lastScore), WHITE, 42, True).blitText(
+        screen, (SCREENWIDTH/2, SCREENHEIGHT/4), WHITE)
+    ButtonCross = Button(40, 40, 150, 120,
+                         'X', screen, colorbackground=LAVENDER, fontSize=20)
+    Restart = Button(160, 120, SCREENWIDTH/2 - 180,
+                     SCREENHEIGHT-SCREENHEIGHT/3, 'Restart', screen)
+    Continue = Button(160, 120, SCREENWIDTH/2 + 180,
+                      SCREENHEIGHT-SCREENHEIGHT/3, 'Continue', screen)
+
+    Restart.CreateButtonMenu()
+    Continue.CreateButtonMenu()
+    ButtonCross.CreateButtonMenu(borderRadius=5)
+    pygame.display.flip()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+
+                if event.button == 1:
+                    if Restart.buttonPressed():
+                        # enviar al usuario al level selector
+                        # print('asd')
+                        return True, (currentLevel)
+                    if Continue.buttonPressed():
+                        if currentLevel == 1:
+                            newLevel = 2
+                        if currentLevel == 2:
+                            newLevel = 3
+                        return True, newLevel
+                    if ButtonCross.buttonPressed():
+                        return False, 0
 
 #     # print(plataformas)
 #     return plataformas, points, player

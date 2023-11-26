@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.y = y
         self.width = width
         self.height = height
-        self.lives = 3
+        self.lives = 2
         self.isAttacking = False
 
         self.currentFrame = 0

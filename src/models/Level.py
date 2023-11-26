@@ -131,9 +131,14 @@ class Level:
         if len(self.bullets) > 0:
             for bullet in self.bullets:
                 if pygame.sprite.collide_mask(self.playerSprite, bullet):
-                    self.playerSprite.getHit()
-                    bullet.isKilled = True
+                    if bullet.isKilled == False:
+                        print(self.playerSprite.lives)
+                        self.playerSprite.getHit()
+                        bullet.isKilled = True
 
+                if pygame.sprite.spritecollideany(
+                        bullet, self.plataformas):
+                    bullet.isKilled = True
         for enemy in self.enemies:
             # if self.playerSprite.isAttacking:
             if self.playerSprite.attacking_rect.colliderect(enemy):
