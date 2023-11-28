@@ -86,6 +86,13 @@ class Counter():
             self.lives -= 0
 
     def updateLivesPlayer(self, lives):
+        """
+        Updates the number of lives displayed for the player on the screen.
+
+        Args:
+            lives (int): The number of lives remaining for the player.
+        """
+
         self.lives = lives
 
     def update(self, scoreTotal, time):

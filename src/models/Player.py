@@ -7,8 +7,24 @@ from spriteSheet import loadSprites
 
 
 class Player(pygame.sprite.Sprite):
+    """
+    Represents the player character in the game.
+
+    Args:
+        groups (list): A list of sprite groups to which the player sprite belongs.
+        x (int): The initial x-position of the player sprite.
+        y (int): The initial y-position of the player sprite.
+        width (int): The width of the player sprite.
+        height (int): The height of the player sprite.
+        screen (pygame.display): The pygame display object.
+    """
 
     def __init__(self, groups, x: int, y: int, width: int, height: int, screen: pygame.display) -> None:
+        """
+        Initializes the player character.
+
+        Sets up the player's sprite attributes, images, attack animation, and movement parameters.
+        """
         super().__init__(groups)
         self.groupsSprites = groups
         self.x = x
@@ -60,20 +76,40 @@ class Player(pygame.sprite.Sprite):
         self.Shoot = SHOOT
 
     def setPlayerSpeed(self, speed=1.5):
+        """
+        Sets the player's movement speed.
+
+        Args:
+            speed (float): The player's movement speed.
+        """
         self.speedX = speed
 
     def setImage(self, image):
+        """
+        Scales the provided image to the player's width and height and returns the scaled image.
+
+        Args:
+            image (pygame.Surface): The image to scale and set for the player sprite.
+        """
         image = pygame.transform.scale(image, (self.width, self.height))
         return image
 
     def liveUpSound(self):
+        """
+        Plays the player's "life up" sound effect.
+        """
         self.liveUp.play()
 
     def shootSound(self):
+        """
+        Plays the player's shooting sound effect.
+        """
         self.Shoot.play()
 
     def getHit(self):
-
+        """
+        Decreases the player's lives count and plays the appropriate sound effect based on the remaining lives.
+        """
         if self.lives > 1:
             self.lives -= 1
             self.damageSound.play()
@@ -82,6 +118,12 @@ class Player(pygame.sprite.Sprite):
             self.dyingSound.play()
 
     def animateDirection(self, key: str):
+        """
+        Updates the player's animation based on the specified direction.
+
+        Args:
+            key (str): The direction key corresponding to the player's animation.
+        """
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdate > ANIMATIONSPEED:
             self.image = pygame.transform.scale(
@@ -92,6 +134,12 @@ class Player(pygame.sprite.Sprite):
             self.lastUpdate = currentTime
 
     def animateDirectionAttack(self, key: str):
+        """
+        Updates the player's attack animation based on the specified direction.
+
+        Args:
+            key (str): The direction key corresponding to the player's attack animation.
+        """
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdateAttack > 150:
             self.currentFrameAttack += 1
@@ -104,14 +152,28 @@ class Player(pygame.sprite.Sprite):
             self.lastUpdateAttack = currentTime
 
     def apply_gravity(self):
+        """
+        Applies gravity to the player's movement.
+        """
         self.direction.y += self.gravity
         self.rect.y += self.direction.y
 
     def jump(self):
+        """
+        Makes the player character jump.
+
+        Updates the player's vertical direction with the jump speed and increments the jump count.
+        """
         self.direction.y = self.jump_speed
         self.jumpCount += 1
 
     def attack(self, direction):
+        """
+        Performs the player's attack animation.
+
+        Args:
+            direction (str): The direction of the attack ('right' or 'left').
+        """
         if direction == 'rigth':
             self.attacking_rect = pygame.Rect(
                 self.rect.right, self.rect.y, PLAYERWIDTH, PLAYERHEIGHT)
@@ -124,6 +186,9 @@ class Player(pygame.sprite.Sprite):
             self.screen.blit(self.attackImg, self.attacking_rect)
 
     def get_inputs(self):
+        """
+        Handles player input and updates the player's state accordingly.
+        """
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] == False:
             self.isAttacking = False
@@ -161,9 +226,15 @@ class Player(pygame.sprite.Sprite):
             self.dance = False
 
     def update(self):
+        """
+        Updates the player's state and position.
+        """
         if self.dance == True:
             self.animateDirection('dance')
         self.get_inputs()
 
     def draw(self):
+        """
+        Draws the player sprite on the screen.
+        """
         self.screen.blit(self.image, self.rect)

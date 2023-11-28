@@ -6,7 +6,42 @@ from spriteSheet import loadSprites
 
 
 class Point(pygame.sprite.Sprite):
+    """
+    Represents a point object that can be spawned and collected to add points to the player's score.
+
+    Attributes:
+        size (int): The size of the point object.
+        pointsToAdd (int): The number of points to add to the player's score when the point is collected.
+        type (str): The type of point (red, yellow, or blue).
+        isKilled (bool): Whether the point has been collected.
+        currentFacing (str): The direction the point is facing ('idle').
+        currentFrame (int): The current frame of the point's animation.
+        animations (dict): A dictionary containing the point's animations for each direction.
+        image (pygame.Surface): The current image of the point.
+        mask (pygame.Mask): The mask of the point for collision detection.
+        rect (pygame.Rect): The rectangle defining the position and size of the point.
+        lastUpdate (int): The last time the point's animation was updated.
+        animationSpeed (int): The speed of the point's animation.
+        ammountOfFrames (int): The number of frames in the point's animation.
+        pointSound (pygame.Sound): The sound effect to play when the point is collected.
+
+    Methods:
+        setImage(image: pygame.Surface) -> None: Sets the point's image.
+        addPointSound() -> None: Plays the point collection sound effect.
+        randoType() -> None: Randomly determines the point's type and points to add.
+        animate() -> None: Updates the point's animation frame.
+        update() -> None: Updates the point's state and position.
+    """
+
     def __init__(self, groups, pos, size) -> None:
+        """
+        Initializes the Point object with the specified size and position.
+
+        Args:
+            groups (pygame.sprite.Group): The groups to add the point to.
+            pos (tuple): The (x, y) coordinates of the point's position.
+            size (int): The size of the point object.
+        """
         super().__init__(groups)
         self.size = size
         self.pointsToAdd = 0
@@ -28,14 +63,29 @@ class Point(pygame.sprite.Sprite):
         self.pointSound = ADDPOINT
 
     def setImage(self, image):
+        """
+        Sets the point's image to the specified surface.
+
+        Args:
+            image (pygame.Surface): The new image for the point.
+
+        Returns:
+            None
+        """
         self.image = pygame.transform.scale(
             image, (self.size/1.5, self.size/1.5))
         return self.image
 
     def addPointSound(self):
+        """
+        Plays the point collection sound effect.
+        """
         self.pointSound.play()
 
     def randoType(self):
+        """
+        Randomly determines the point's type and points to add.
+        """
         self.randInt = randint(0, 2)
         if self.randInt == 0:
             self.sheet = FRUIT1SHEET
@@ -51,6 +101,9 @@ class Point(pygame.sprite.Sprite):
             self.pointsToAdd = 35
 
     def animate(self):
+        """
+        Updates the point's animation frame.
+        """
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdate > self.animationSpeed:
             self.setImage(
@@ -61,6 +114,9 @@ class Point(pygame.sprite.Sprite):
             self.lastUpdate = currentTime
 
     def update(self):
+        """
+        Updates the point's state and position.
+        """
         if self.isKilled:
             # hacer algo
             self.kill()

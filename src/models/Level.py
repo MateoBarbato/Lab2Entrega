@@ -17,7 +17,62 @@ from models.Lives import Live
 
 
 class Level:
+    """
+    This class represents a level in the game.
+
+    Attributes:
+        levelData (list): The data of the level.
+        background (pygame.Surface): The background image for the level.
+        screen (pygame.Surface): The surface to draw on.
+        mute (bool): Whether the sound is muted or not.
+        spriteGroupAll (pygame.sprite.Group): The group of all sprites in the level.
+        plataformas (pygame.sprite.Group): The group of platforms in the level.
+        points (pygame.sprite.Group): The group of points in the level.
+        enemies (pygame.sprite.Group): The group of enemies in the level.
+        bullets (pygame.sprite.Group): The group of bullets in the level.
+        playerbullets (pygame.sprite.Group): The group of bullets shot by the player.
+        movingEnemies (pygame.sprite.Group): The group of moving enemies in the level.
+        life (pygame.sprite.GroupSingle): The group of lives in the level.
+        player (pygame.sprite.GroupSingle): The group of players in the level.
+        boss (pygame.sprite.GroupSingle): The group of bosses in the level.
+        enemiesArray (list): The list of enemies in the level.
+        movingEnemiesArray (list): The list of moving enemies in the level.
+        timeTotal (int): The total time of the level.
+        timeForLife (int): The time for which a life appears.
+        scoreTotal (int): The total score of the player.
+        pointPerEnemy (int): The number of points per enemy.
+        levelDone (bool): Whether the level is done or not.
+        music (pygame.mixer.Sound): The music for the level.
+        musicVolume (float): The volume of the music.
+        counter (Counter): The counter object.
+
+    Methods:
+        setUpVolume(): Sets up the volume of the music.
+        stopMusic(): Stops the music.
+        muteHandler(): Mutes or unmutes the sound.
+        getMuteValue(): Returns the mute value.
+        setupLevel(spriteGroupAll, levelData, spawnPlayer=True): Sets up the level.
+        createCounter(): Creates the counter.
+        handleEvents(events): Handles the events.
+        update(self, deltaTime): Updates the level.
+        draw(self): Draws the level.
+        checkCollisions(): Checks for collisions.
+        checkLifeTime(): Checks if the life has expired.
+        respawnPlayer(): Respawns the player.
+        checkBoss(): Checks if the boss is killed.
+        checkLevelDone(): Checks if the level is done.
+    """
+
     def __init__(self, levelData, background, screen, muteState) -> None:
+        """
+        Constructor for the Level class.
+
+        Args:
+            levelData (list): The data of the level.
+            background (pygame.Surface): The background image for the level.
+            screen (pygame.Surface): The surface to draw on.
+            muteState (bool): Whether the sound is muted or not.
+        """
         self.screen = createScreen()
         self.clock = pygame.time.Clock()
         self.clock.tick(60)
@@ -60,22 +115,47 @@ class Level:
         self.createCounter()
 
     def setUpVolume(self):
+        """
+        Sets up the volume of the music.
+        """
         if self.mute == True:
             self.musicVolume = 0.5
         else:
             self.musicVolume = 0
 
     def stopMusic(self):
+        """
+        Stops the music.
+        """
         self.music.stop()
 
-    def muteHandler(self, muteValue):
+    def muteHandler(self):
+        """
+        Mutes or unmutes the sound.
+
+        """
         self.muteHandler = not self.muteHandler
 
     def getMuteValue(self):
+        """
+        Returns the mute value.
+
+        Returns:
+            bool: The mute value.
+        """
         return self.muteHandler
 
     def setupLevel(self, spriteGroupAll, levelData, spawnPlayer=True):
+        """
+        Sets up the level.
 
+        Args:
+            spriteGroupAll (pygame.sprite.Group): The group of all sprites in the level.
+            levelData (list): The data of the level.
+            spawnPlayer (bool): Whether to spawn the player or not. Defaults to True.
+
+        Sets up the level by creating the platforms, points, enemies, bullets, player, and boss.
+        """
         for rowIndex, row in enumerate(levelData):
             for colIndex, celda in enumerate(row):
                 x = colIndex * BLOCKWIDTH
@@ -111,6 +191,12 @@ class Level:
         self.bossSprite = self.boss.sprite
 
     def respawnEnemies(self):
+        """
+        Respawns enemies.
+
+        Respawns enemies by adding new instances of Bug and BugStatic to the enemies group.
+
+        """
         for i in range(1):
             if i == 0:
                 self.enemies.add(
@@ -128,6 +214,13 @@ class Level:
                                            BUGSIZE, BUGSIZE, self.screen, 'water', SPRITECANGREJO, self.pointPerEnemy*2))
 
     def spawnLife(self):
+        """
+        Spawns a life if the player has less than three lives.
+
+        Spawns a new instance of Live to the life group if the player has less than three lives.
+        The life is spawned at a random x position between 128 and 1024.
+
+        """
         if len(self.life) <= 0:
             x = randint(0, 1)
             if x:
@@ -139,10 +232,23 @@ class Level:
             self.timeForLife = int(self.timeForLife / 2)
 
     def createCounter(self):
+        """
+        Creates a counter object.
+
+        Creates a new instance of Counter and adds it to the sprite group.
+
+        """
         self.counter = Counter(
             self.scoreTotal, self.playerSprite.lives, self.screen, self.gameTime)
 
     def enemyShoots(self):
+        """
+        Makes enemies shoot bullets.
+
+        Makes enemies shoot bullets by adding new instances of Bullet to the bullets group.
+        The bullets are shot from the enemy's position and have a random facing.
+
+        """
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdateShooting > 1400:
             for enemy in self.enemies:
@@ -156,6 +262,13 @@ class Level:
             self.lastUpdateShooting = currentTime
 
     def playerShoots(self):
+        """
+        Makes the player shoot bullets.
+
+        Makes the player shoot bullets by adding new instances of Bullet to the playerbullets group.
+        The bullets are shot from the player's position and have a random facing.
+
+        """
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdateShootingPlayer > 650:
             if self.playerSprite.currentFacing != 'down' or None:
@@ -166,6 +279,13 @@ class Level:
                 self.lastUpdateShootingPlayer = currentTime
 
     def bossShooting(self):
+        """
+        Makes the boss shoot bullets.
+
+        Makes the boss shoot bullets by adding new instances of Bullet to the bullets group.
+        The bullets are shot from the boss's position and have a random facing.
+
+        """
         currentTime = pygame.time.get_ticks()
         if self.timeTotal % 2 != 0:
             if currentTime - self.lastUpdateShootingBoss > 450:
@@ -195,12 +315,27 @@ class Level:
                 self.lastUpdateShootingBoss = currentTime
 
     def check_bullet_bounds(self, screenWidth):
+        """
+        Removes bullets that have gone off the screen.
+
+        Removes bullets from the bullets group if they have gone off the left or right side of the screen.
+
+        Args:
+            screenWidth (int): The width of the screen.
+
+        """
         for bullet in self.bullets:
             if bullet.rect.right < -128 or bullet.rect.left > screenWidth+128:
                 bullet.kill()
                 self.scoreTotal += 5
 
     def horizontal_movement_colission(self):
+        """
+        Handles horizontal movement collision between the player and platforms.
+
+        Checks for collisions between the player and platforms and updates the player's position accordingly.
+
+        """
         player = self.player.sprite
         player.rect.x += player.direction.x
 
@@ -212,6 +347,13 @@ class Level:
                     player.rect.right = plataforma.rect.left
 
     def vertical_movement_colission(self):
+        """
+        Handles vertical movement collision between the player and platforms.
+
+        Checks for collisions between the player and platforms and updates the player's position accordingly.
+        Also handles the player's interaction with traps.
+
+        """
         player = self.playerSprite
         player.apply_gravity()
 
@@ -236,6 +378,15 @@ class Level:
                     player.direction.y = 0
 
     def vertical_movement_colission_enemies(self, enemy):
+        """
+        Handles vertical movement collision between enemies and platforms.
+
+        Checks for collisions between enemies and platforms and updates the enemy's position accordingly.
+
+        Args:
+            enemy (Enemy): The enemy to check for collisions.
+
+        """
         enemy.apply_gravity()
         for plataforma in self.plataformas:
             if plataforma.rect.colliderect(enemy.rect):
@@ -247,6 +398,15 @@ class Level:
                         enemy.firstTimeFalling = False
 
     def horizontal_movement_colission_enemies(self, enemy):
+        """
+        Handles horizontal movement collision between enemies and platforms.
+
+        Checks for collisions between enemies and platforms and updates the enemy's position and facing accordingly.
+
+        Args:
+            enemy (Enemy): The enemy to check for collisions.
+
+        """
         # MUEVO AL BICHO
         enemy.move()
         # chequeo colisiones horizontales
@@ -262,10 +422,22 @@ class Level:
                     enemy.currentFacing = 'left'
 
     def playerGetHitted(self):
+        """
+        Handles the player getting hit by an enemy or trap.
+
+        Decreases the player's lives and plays the hit sound.
+
+        """
         self.playerSprite.getHit()
         self.playerGotHitted = True
 
     def addLife(self):
+        """
+        Handles the player picking up a life.
+
+        Increases the player's lives and plays the live up sound.
+
+        """
         self.playerpickedLife = True
         self.playerSprite.liveUpSound()
         if self.playerSprite.lives < 3:
@@ -273,6 +445,10 @@ class Level:
             self.playerSprite.lives += 1
 
     def timer(self):
+        """
+        Updates the game timer and handles player life updates and player getting hit status.
+
+        """
         currentTime = pygame.time.get_ticks()
         if currentTime - self.gameTime > 1000:
             self.timeTotal -= 1
@@ -283,6 +459,12 @@ class Level:
                 self.playerGotHitted = False
 
     def run(self):
+        """
+        Runs the main loop of the game.
+
+        This function handles the main game loop, including updating the game state, drawing the game elements, and handling user input.
+
+        """
         self.timer()
         self.counter.updateLivesPlayer(self.playerSprite.lives)
         drawBackground(self.screen, self.background)
