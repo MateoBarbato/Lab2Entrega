@@ -25,6 +25,10 @@ class Bullet(pygame.sprite.Sprite):
             self.sheet = BULLETWATER
             self.animations = loadSprites(
                 self.sheet, 32, 32, 3, 4, self.spriteKeys)
+        elif type == 'player':
+            self.sheet = BULLETWATER
+            self.animations = loadSprites(
+                self.sheet, 32, 32, 3, 4, self.spriteKeys)
         self.image = self.setImage(
             self.animations[self.currentFacing][self.currentFrame])
         self.rect = self.image.get_rect()

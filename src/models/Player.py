@@ -15,9 +15,8 @@ class Player(pygame.sprite.Sprite):
         self.y = y
         self.width = width
         self.height = height
-        self.lives = 2
+        self.lives = 3
         self.isAttacking = False
-
         self.currentFrame = 0
         self.currentFrameAttack = 0
         self.spriteKeys = ['down', 'rigth', 'left',
@@ -37,6 +36,7 @@ class Player(pygame.sprite.Sprite):
         # self.Attackcooldown = 300
         # self.rect.center = (self.x, self.y)
         self.mask = pygame.mask.from_surface(self.image)
+
         self.screen = screen
         self.lastUpdate = pygame.time.get_ticks()
         self.lastUpdateVidas = pygame.time.get_ticks()
@@ -45,10 +45,9 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0, 0)
         self.falling = True
         self.dance = False
-        self.moving = True
+        self.shoot = False
         self.currentFacing = 'down'
         self.jumping = False
-        self.distanceTotal = 0
         self.gravity = 0.72
         self.jump_speed = -16.8
         # self.gravity = 0.1
@@ -70,8 +69,8 @@ class Player(pygame.sprite.Sprite):
 
     def getHit(self):
         currentTime = pygame.time.get_ticks()
-        if self.lives > 0:
-            if currentTime - self.lastUpdateVidas > ANIMATIONSPEED*4:
+        if self.lives > 1:
+            if currentTime - self.lastUpdateVidas > ANIMATIONSPEED*5:
                 self.lives -= 1
                 self.lastUpdateVidas = currentTime
         else:
@@ -124,11 +123,17 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE] == False:
             self.isAttacking = False
 
+        if keys[pygame.K_s] == False:
+            self.shoot = False
+
         if keys[pygame.K_SPACE]:
             self.attack(self.currentFacing)
             self.isAttacking = True
             self.direction.x = 0
             self.dance = False
+
+        if keys[pygame.K_s]:
+            self.shoot = True
 
         if keys[pygame.K_d]:
             self.direction.x = PLAYERVELOCITY
@@ -139,7 +144,6 @@ class Player(pygame.sprite.Sprite):
             self.currentFacing = 'left'
             self.animateDirection('left')
         else:
-            # self.animateDirection('down')
             self.direction.x = 0
 
         if keys[pygame.K_w] and self.onGround:
@@ -150,29 +154,6 @@ class Player(pygame.sprite.Sprite):
             self.dance = True
         else:
             self.dance = False
-
-        # if keys[pygame.K_SPACE]:
-        #     self.attack(self.currentFacing)
-        # if keys[pygame.K_d]:
-        #     self.direction.x = PLAYERVELOCITY
-        #     self.currentFacing = 'rigth'
-        #     self.animateDirection('rigth')
-        # elif keys[pygame.K_a]:
-        #     self.direction.x = -PLAYERVELOCITY
-        #     self.currentFacing = 'left'
-        #     self.animateDirection('left')
-        # else:
-        #     # self.animateDirection('down')
-        #     self.direction.x = 0
-
-        # if keys[pygame.K_w] and self.onGround:
-        #     if self.jumpCount < 2:
-        #         self.jump()
-
-        # if keys[pygame.K_LSHIFT]:
-        #     self.dance = True
-        # else:
-        #     self.dance = False
 
     def update(self):
         if self.dance == True:

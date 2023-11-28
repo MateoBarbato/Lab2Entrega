@@ -34,14 +34,22 @@ class BugStatic(pygame.sprite.Sprite):
         self.currentFacing = 'left'
         self.bullets = bulletsGroup
         self.falling = True
-        self.velocityY = GRAVITY
+        self.direction = pygame.math.Vector2(0, 0)
+        self.gravity = 0.72
 
     def delBug(self):
         del self
 
+    def randDirection(self):
+        pass
+
     def setImage(self, image):
         self.image = pygame.transform.scale(image, (self.width, self.height))
         return self.image
+
+    def apply_gravity(self):
+        self.direction.y += self.gravity
+        self.rect.y += self.direction.y
 
     def animateDirection(self):
         currentTime = pygame.time.get_ticks()
@@ -55,8 +63,9 @@ class BugStatic(pygame.sprite.Sprite):
 
     def update(self):
 
-        if self.falling:
-            self.rect.y += self.velocityY
+        # if self.falling:
+        #     self.direction.y += self.gravity
+        #     self.rect.y += self.direction.y
 
         # determino la direccion del sprite
         if self.x > LIMITWIDTHGROUND/2:

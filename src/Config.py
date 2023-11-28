@@ -41,11 +41,11 @@ def loadImage(image: str):
         exit()
 
 
-def loadBackground(image: str = 'fondoMarDia.png'):
+def loadBackground(image: str = 'fondoMarDia.png', scale=(SCREENWIDTH, SCREENHEIGHT)):
     try:
         background = pygame.image.load(f'assets/{image}')
         background = pygame.transform.scale(
-            background, (SCREENWIDTH, SCREENHEIGHT))
+            background, scale)
         return background
     except FileNotFoundError as e:
         errMsg(e)
@@ -64,12 +64,15 @@ BACKGROUNSEADAY = loadBackground()
 BACKGROUNSEANIGHT = loadBackground('fondoMarNoche.png')
 BRACKGROUNDGRASS = loadBackground('grass.png')
 BRACKGROUNDTREES = loadBackground('trees.png')
-BACKGROUNDMAIN = loadBackground('BossLevelV1.png')
+BACKGROUNDPAUSE = loadBackground('Pause.png', (800, 450))
+BACKGROUNDCONTROLES = loadBackground('controles.png', (800, 450))
 BACKGROUNDSECRETLEVEL = loadBackground('fondo.png')
 BACKGROUNDLEVEL1 = loadBackground('Level1V1.png')
 BACKGROUNDLEVEL2 = loadBackground('Level2V1.png')
+BACKGROUNDLEVEL3 = loadBackground('BossLevelV1.png')
 SPRITEBELLSPROUT = loadImage('pokemon4.png')
 SPRITECANGREJO = loadImage('pokemon5.png')
+TRAPTEST = loadImage('trap.png')
 PLAYERSHEET = loadImage('LucasSprite.png')
 PLAYERSHEETATTACK = loadImage('LucasSpritewithAttack.png')
 BULLETPLANT = loadImage('plantBullet.png')
@@ -77,3 +80,4 @@ BULLETWATER = loadImage('waterBullet.png')
 FRUIT1SHEET = loadImage('point1.png')
 FRUIT2SHEET = loadImage('point2.png')
 FRUIT3SHEET = loadImage('point3.png')
+CORAZON = loadImage('vida.png')

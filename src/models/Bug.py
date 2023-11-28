@@ -9,17 +9,17 @@ from spriteSheet import loadSprites
 
 class Bug(pygame.sprite.Sprite):
 
-    def __init__(self, groups, bulletsGroup, x: int, y: int, width: int, height: int, screen: pygame.display, typeElement: str, imageSheet: str = None) -> None:
+    def __init__(self, groups, bulletsGroup, x: int, y: int, width: int, height: int, screen: pygame.display, typeElement: str, imageSheet: str, pointsToAdd) -> None:
         super().__init__(groups)
         self.groupsVar = groups
         self.x = x
         self.y = y
-        self.speed = 1
         self.pos = (x, y)
         self.width = width
         self.height = height
         self.currentFrame = 0
         self.sheet = imageSheet
+        self.pointsToAdd = pointsToAdd
         self.spriteKeys = ['down', 'rigth', 'left']
         self.animations = loadSprites(
             self.sheet, SPRITEBUGSIZE, SPRITEBUGSIZE, SPRITEBUGROW, SPRITEBUGCOL, self.spriteKeys)
@@ -35,50 +35,32 @@ class Bug(pygame.sprite.Sprite):
         self.bullets = bulletsGroup
         self.falling = True
         self.typeElement = typeElement
-        self.velocityX = ENEMYVELOCITY
-        self.randDir()
-        # self.setRandomPos()
-
-    def setRandomPos(self):
-        x = randint(0, LIMITWIDTHGROUND-self.width)
-        y = self.y
-        self.x = x
-        self.y = y
-        return (x, y)
+        self.direction = pygame.math.Vector2(2, 0)
+        self.gravity = 0.72
+        # self.randDir()
 
     def delBug(self):
         del self
 
-    def randDir(self):
-        if randint(0, 1) == 0:
-            self.currentFacing = 'left'
-            self.velocityX = -2
+    def randDirection(self):
+        x = randint(0, 1)
+
+        if x == 1:
+            self.currentFacing == 'left'
         else:
-            self.currentFacing = 'rigth'
-            self.velocityX = 2
+            self.currentFacing == 'rigth'
+
+    def apply_gravity(self):
+        self.direction.y += self.gravity
+        self.rect.y += self.direction.y
 
     def moverAuto(self):
-        # if self.rect.bottom > LIMITHEIGHTGROUND:
-        #     self.falling = False
-        if self.falling:
-            self.rect.y += GRAVITY
-
-        if self.falling == False:
-            # if self.rect.left < BLOCKWIDTH:
-            #     print('pared izq')
-            #     # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
-            #     self.currentFacing = 'rigth'
-            # elif self.rect.right > LIMITWIDTHGROUND:
-            #     print('pared derecha')
-            #     # ahora verifica ancho de nivel, falta verificar colisiones con futuros bloques
-            #     self.currentFacing = 'left'
-
-            if self.currentFacing == 'left':
-                self.animateDirection()
-                self.rect.x += self.velocityX
-            elif self.currentFacing == 'rigth':
-                self.animateDirection()
-                self.rect.x -= self.velocityX
+        if self.currentFacing == 'left':
+            self.animateDirection()
+            # self.rect.x += self.direction.x
+        elif self.currentFacing == 'rigth':
+            self.animateDirection()
+            # self.rect.x -= self.direction.x
 
     def createBullet(self, spriteGroup):
         if self.falling == False:

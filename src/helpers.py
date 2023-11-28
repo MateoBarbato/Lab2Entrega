@@ -1,5 +1,6 @@
 from ast import main
 from json import load
+import json
 from random import randint
 import pygame
 import sys
@@ -19,11 +20,11 @@ def exit():
     sys.exit()
 
 
-def randIntPos(axis, axisSize):
+def randIntPos(axis: str, size):
     if axis == 'x':
-        return randint(axisSize, LIMITWIDTHGROUND-axisSize)
+        return randint(size, LIMITWIDTHGROUND-size)
     else:
-        return randint(axisSize, LIMITHEIGHTGROUND-axisSize)
+        return randint(150 + size, LIMITHEIGHTGROUND-size)
 
 
 def createScreen():
@@ -63,11 +64,90 @@ def waitUser():
                 return
 
 
+def controlesMenu(screen, levelCanvas):
+
+    image = BACKGROUNDCONTROLES
+    rectImage = image.get_rect(center=(SCREENWIDTH/2, SCREENHEIGHT/2))
+    screen.blit(image, rectImage)
+
+    ButtonCross = Button(40, 40, rectImage.left+70, rectImage.top+70,
+                         'X', screen, DARKBLUE, WHITE, 20)
+    ButtonCross.CreateButtonMenu()
+    pygame.display.flip()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    exit()
+                if event.key == pygame.K_p:
+                    return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if ButtonCross.buttonPressed():
+                        return Pause(screen, levelCanvas)
+
+
+def Pause(screen, levelCanvas):
+    muteValue = levelCanvas.getMuteValue()
+    if muteValue:
+        str = 'Mute On'
+    else:
+        str = 'Mute Off'
+
+    image = BACKGROUNDPAUSE
+    rectImage = image.get_rect(center=(SCREENWIDTH/2, SCREENHEIGHT/2))
+    screen.blit(image, rectImage)
+    ButtonCross = Button(40, 40, rectImage.left+70, rectImage.top+100,
+                         'X', screen, DARKBLUE, WHITE, 20)
+    ButtonCross.CreateButtonMenu()
+
+    buttonMute = Button(150, 80, rectImage.centerx - 200, rectImage.centery+80,
+                        f'{str}', screen, DARKBLUE, WHITE, 14)
+    buttonMute.setFont(14)
+    buttonMute.CreateButtonMenu()
+    buttonControles = Button(180, 80, rectImage.centerx + 200, rectImage.centery+80,
+                             'Controls', screen, DARKBLUE, WHITE, 14)
+    buttonControles.setFont(14)
+    buttonControles.CreateButtonMenu()
+
+    pygame.display.flip()
+    while True:
+        if muteValue == False or muteValue == None:
+            # ButtonMute.colorText = GREEN
+            buttonMute.setText('Mute On', RED)
+            # ButtonMute.CreateButtonMenu()
+        else:
+            # ButtonMute.colorText = RED
+            buttonMute.setText('Mute Off', GREEN)
+            # ButtonMute.CreateButtonMenu()
+            # pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    exit()
+                if event.key == pygame.K_p:
+                    return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if buttonMute.buttonPressed():
+                        muteValue = not muteValue
+                        buttonMute.setFont(14)
+                        buttonMute.CreateButtonMenu()
+                        pygame.display.flip()
+                    if buttonControles.buttonPressed():
+                        controlesMenu(screen, levelCanvas)
+                    if ButtonCross.buttonPressed():
+                        return
+
+
 def mainMenu(screen, muteValue: bool):
     background = BACKGROUNSEADAY
     drawBackground(screen, background)
-
-    muteValue = muteValue
+    muteValue = False if muteValue == None else muteValue
     ButtonStart = Button(BUTTONWIDTH, BUTTONHEIGHT,
                          (SCREENWIDTH)/2, (BUTTONHEIGHT*3), 'Start', screen)
     ButtonStart.CreateButtonMenu()
@@ -79,6 +159,7 @@ def mainMenu(screen, muteValue: bool):
     ButtonExit.CreateButtonMenu()
     pygame.display.flip()
     while True:
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -90,7 +171,7 @@ def mainMenu(screen, muteValue: bool):
                 if event.button == 1:
                     if ButtonStart.buttonPressed():
                         # enviar al usuario al level selector
-                        return (muteValue, False)
+                        return muteValue
                         # return muteValue
                     if ButtonOptions.buttonPressed():
                         optionMenu(screen, muteValue)
@@ -100,7 +181,7 @@ def mainMenu(screen, muteValue: bool):
 
 
 def optionMenu(screen, muteValue: bool):
-    muteValue = muteValue
+    muteValue = False if muteValue == None else muteValue
 
     drawBackground(screen, BACKGROUNSEADAY)
     ButtonBack = Button(BUTTONWIDTH, BUTTONHEIGHT,
@@ -198,13 +279,17 @@ def levelSelector(screen, muteValue):
 
     ButtonCross = Button(40, 40, 150, 120,
                          'X', screen, colorbackground=LAVENDER, fontSize=20)
-    Level1 = Button(120, 120, SCREENWIDTH/2,
-                    SCREENHEIGHT/3, 'Level 1', screen)
+
+    Level1 = Button(120, 120, SCREENWIDTH/3 - 80,
+                    SCREENHEIGHT/2, 'Level 1', screen)
     Level2 = Button(120, 120, SCREENWIDTH/2,
                     SCREENHEIGHT/2, 'Level 2', screen)
+    Level3 = Button(120, 120, SCREENWIDTH - SCREENWIDTH/3 + 80,
+                    SCREENHEIGHT / 2, 'Level 3', screen)
 
     Level1.CreateButtonMenu()
     Level2.CreateButtonMenu()
+    Level3.CreateButtonMenu()
     ButtonCross.CreateButtonMenu(borderRadius=5)
     pygame.display.flip()
     while True:
@@ -218,33 +303,43 @@ def levelSelector(screen, muteValue):
 
                 if event.button == 1:
                     if Level1.buttonPressed():
-                        # enviar al usuario al level selector
-                        # print('asd')
-                        return True, 1
+                        return False, 1
                     if Level2.buttonPressed():
-                        return True, 2
+                        return False, 2
+                    if Level2.buttonPressed():
+                        return False, 3
                     if ButtonCross.buttonPressed():
-                        return False, 0
+                        return True, 0
 
 
 # def loadLevel(spriteGroupAll, map):
-def levelFinished(screen, background, currentLevel, lastScore):
+def levelFinished(screen, background, currentLevel, lastScore, bestScores):
     drawBackground(screen, background)
-
+    if bestScores == 0:
+        pass
+    else:
+        highScores = bestScores
     Text('Your score', WHITE, 42, False).blitText(
         screen, (SCREENWIDTH/2, SCREENHEIGHT/5), WHITE)
     Text(str(lastScore), WHITE, 42, True).blitText(
         screen, (SCREENWIDTH/2, SCREENHEIGHT/4), WHITE)
-    ButtonCross = Button(40, 40, 150, 120,
-                         'X', screen, colorbackground=LAVENDER, fontSize=20)
-    Restart = Button(160, 120, SCREENWIDTH/2 - 180,
-                     SCREENHEIGHT-SCREENHEIGHT/3, 'Restart', screen)
-    Continue = Button(160, 120, SCREENWIDTH/2 + 180,
-                      SCREENHEIGHT-SCREENHEIGHT/3, 'Continue', screen)
+    print(len(highScores))
+    for i, value in enumerate(highScores, 1):
 
+        Text(f'Player {i} : {value["score"]}', WHITE, 22, True).blitText(
+            screen, (SCREENWIDTH/2, SCREENHEIGHT/4 + 80*i), WHITE)
+
+    ButtonLevels = Button(180, 40, 150, 120,
+                          'Levels', screen, colorbackground=LAVENDER, fontSize=20)
+    Restart = Button(160, 70, SCREENWIDTH/2 - 250,
+                     SCREENHEIGHT-SCREENHEIGHT/7, 'Restart', screen)
+    Continue = Button(160, 70, SCREENWIDTH/2 + 250,
+                      SCREENHEIGHT-SCREENHEIGHT/7, 'Continue', screen)
+    Restart.setFont(18)
     Restart.CreateButtonMenu()
+    Continue.setFont(18)
     Continue.CreateButtonMenu()
-    ButtonCross.CreateButtonMenu(borderRadius=5)
+    ButtonLevels.CreateButtonMenu(borderRadius=5)
     pygame.display.flip()
     while True:
         for event in pygame.event.get():
@@ -266,8 +361,80 @@ def levelFinished(screen, background, currentLevel, lastScore):
                         if currentLevel == 2:
                             newLevel = 3
                         return True, newLevel
-                    if ButtonCross.buttonPressed():
+                    if ButtonLevels.buttonPressed():
                         return False, 0
 
-#     # print(plataformas)
-#     return plataformas, points, player
+
+def saveScores(data, scoreTotal, levelSelected):
+    if levelSelected == 1:
+        scoreList = data['Level 1']
+    elif levelSelected == 2:
+        scoreList = data['Level 2']
+    elif levelSelected == 3:
+        scoreList = data['Level 3']
+    saved = False
+    scoreList = sorted(
+        scoreList, key=lambda k: k['score'], reverse=True)
+    for i in range(len(scoreList)):
+        if scoreList[i]['score'] < scoreTotal and saved == False:
+            aux = dict()
+            aux['score'] = scoreTotal
+            scoreList.append(aux)
+            saved = True
+    scoreList = sorted(
+        scoreList, key=lambda k: k['score'], reverse=True)
+
+    if levelSelected == 1:
+        data['Level 1'] = scoreList[0:5]
+    elif levelSelected == 2:
+        data['Level 2'] = scoreList[0:5]
+    elif levelSelected == 3:
+        data['Level 3'] = scoreList[0:5]
+
+    try:
+        with open(r"./db.json", 'w') as dataEnd:
+            json.dump(data, dataEnd, indent=2)
+    except OSError.filename as Err:
+        errMsg(
+            "Error while writing the scores to the datafile. The score wont be saved")
+        print(Err)
+        errMsg(
+            'Please validate the files and check again. If the problem persist re-install the files')
+    return scoreList[0:5]
+
+
+def createDefaultDb():
+    # arr = []
+    data = dict()
+
+    for i in range(1, 4):
+        arrLevel = []
+        for j in range(1, 6):
+            arr = dict()
+            arr['score'] = 0
+            arrLevel.append(arr)
+        data[f'Level {i}'] = arrLevel
+    return data
+
+
+def loadDb():
+    try:
+        # Intento abrir la base de datos.
+        with open('./db.json') as db:
+            data = json.load(db)
+        # Si abre asigno los datos a las variables del juego ( maxScore y Attempts a superar el max score)
+        return data
+    except FileNotFoundError as Err:
+        # Si falla por no encontrar el archivo me guardo el mensaje del except como Err
+        # Despues creo una base de datos nueva (todo en 0) y la utilizo para cargar los datos a mis variables
+        # (tambien podes hacer esto al final de juego, yo lo hice del principio para atajarme de errores en medio de la partida)
+        data = createDefaultDb()
+        with open('./db.json', 'w') as file:
+            json.dump(data, file, indent=2)
+        # Le muestro los mensajes default y el mensaje de Err que me viene del except
+        # la funcion errMsg es una funcion propia que solo aniade espacios arriba y abajo para que sea mas legible todo pero nada mas
+        errMsg("Error while trying to read data for the scores")
+        print(Err)
+        errMsg('Please validate the install and try again. The game can run without it but the db has been reseted to default (0)')
+        # por ultimo asigno los datos de la nueva base a las nuevas variables
+        return data
