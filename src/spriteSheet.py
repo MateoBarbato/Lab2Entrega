@@ -11,5 +11,4 @@ def loadSprites(sheet, spritSizeWidth, spritSizeHeight, rows, cols, keys):
         for i in range(cols):
             spriteRow[currentKey].append(sheet.subsurface(
                 spritSizeWidth * i, spritSizeHeight * row, spritSizeWidth, spritSizeHeight))
-    # print(spriteRow)
     return spriteRow

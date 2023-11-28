@@ -1,8 +1,11 @@
 from random import randint
+import random
+from re import S
 import pygame
-from Config import ANIMATIONSPEED, BACKGROUNDLEVEL1, BLOCKWIDTH, BUGSIZE, BULLETSIZE, ENEMYVELOCITY, PLAYERHEIGHT, PLAYERWIDTH, SPRITECANGREJO
+from Config import ANIMATIONSPEED, BACKGROUNDLEVEL1, BLOCKWIDTH, BUGSIZE, BULLETSIZE, ENEMYVELOCITY, GAMEMUSIC, LIVEUP, PLAYERHEIGHT, PLAYERWIDTH, SCREENHEIGHT, SCREENWIDTH, SHOOT, SPRITECANGREJO
 from colors import BLACK
 from helpers import createScreen, drawBackground, randIntPos
+from models.Boos import Boss
 from models.Bug import Bug
 from models.BugsStatic import BugStatic
 from models.Bullet import Bullet
@@ -10,6 +13,7 @@ from models.Counter import Counter
 from models.Platform import Platform
 from models.Player import Player
 from models.Point import Point
+from models.Lives import Live
 
 
 class Level:
@@ -27,23 +31,42 @@ class Level:
         self.gameTime = pygame.time.get_ticks()
         self.lastUpdate = pygame.time.get_ticks()
         self.lastUpdateShooting = pygame.time.get_ticks()
-        self.lastUpdateVidas = pygame.time.get_ticks()
-
+        self.lastUpdateShootingPlayer = pygame.time.get_ticks()
+        self.lastUpdateShootingBoss = pygame.time.get_ticks()
+        self.lastUpdateLife = pygame.time.get_ticks()
+        self.playerpickedLife = False
+        self.playerGotHitted = False
         self.plataformas = pygame.sprite.Group()
         self.points = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.playerbullets = pygame.sprite.Group()
         self.movingEnemies = pygame.sprite.Group()
+        self.life = pygame.sprite.GroupSingle()
         self.player = pygame.sprite.GroupSingle()
+        self.boss = pygame.sprite.GroupSingle()
         self.enemiesArray = []
         self.movingEnemiesArray = []
         self.timeTotal = 60
+        self.timeForLife = 45
         self.scoreTotal = 0
         self.pointPerEnemy = 15
         self.levelDone = False
+        self.music = GAMEMUSIC
+        self.musicVolume = 0.5
+        self.setUpVolume()
         self.setupLevel(self.spriteGroupAll, levelData)
+        self.music.play(-1).set_volume(self.musicVolume)
         self.createCounter()
+
+    def setUpVolume(self):
+        if self.mute == True:
+            self.musicVolume = 0.5
+        else:
+            self.musicVolume = 0
+
+    def stopMusic(self):
+        self.music.stop()
 
     def muteHandler(self, muteValue):
         self.muteHandler = not self.muteHandler
@@ -76,7 +99,16 @@ class Level:
                 elif celda == 'M':
                     self.movingEnemies.add(Bug([spriteGroupAll, self.movingEnemies], [self.bullets], x, y,
                                                BUGSIZE, BUGSIZE, self.screen, 'water', SPRITECANGREJO, self.pointPerEnemy*2))
+                elif celda == 'L':
+                    self.life.add(
+                        Live([spriteGroupAll, self.life], (x, y), BLOCKWIDTH))
+                elif celda == 'B':
+                    self.boss.add(
+                        Boss([spriteGroupAll, self.boss], self.bullets, x, y, 400, 186, self.screen, 500))
+
         self.playerSprite = self.player.sprite
+        self.lifeSprite = self.life.sprite
+        self.bossSprite = self.boss.sprite
 
     def respawnEnemies(self):
         for i in range(1):
@@ -95,29 +127,78 @@ class Level:
                 self.movingEnemies.add(Bug([self.spriteGroupAll, self.movingEnemies], [self.bullets], randIntPos('x', 64), 320,
                                            BUGSIZE, BUGSIZE, self.screen, 'water', SPRITECANGREJO, self.pointPerEnemy*2))
 
+    def spawnLife(self):
+        if len(self.life) <= 0:
+            x = randint(0, 1)
+            if x:
+                xPos = 128
+            else:
+                xPos = 1024
+            self.life.add(
+                Live([self.spriteGroupAll, self.life], (xPos, 576), BLOCKWIDTH))
+            self.timeForLife = int(self.timeForLife / 2)
+
     def createCounter(self):
         self.counter = Counter(
             self.scoreTotal, self.playerSprite.lives, self.screen, self.gameTime)
 
     def enemyShoots(self):
         currentTime = pygame.time.get_ticks()
-        if currentTime - self.lastUpdateShooting > 1800:
+        if currentTime - self.lastUpdateShooting > 1400:
             for enemy in self.enemies:
+                enemy.shootSound()
                 self.bullets.add(Bullet([self.spriteGroupAll, self.bullets], enemy.rect.centerx, enemy.rect.centery,
                                         5, (BULLETSIZE, BULLETSIZE), 'plant', enemy.currentFacing))
             for enemy in self.movingEnemies:
+                enemy.shootSound()
                 self.bullets.add(Bullet([self.spriteGroupAll, self.bullets], enemy.rect.centerx, enemy.rect.centery,
                                         5, (BULLETSIZE, BULLETSIZE), 'water', enemy.currentFacing))
             self.lastUpdateShooting = currentTime
 
     def playerShoots(self):
         currentTime = pygame.time.get_ticks()
-        if currentTime - self.lastUpdateShooting > 650:
+        if currentTime - self.lastUpdateShootingPlayer > 650:
             if self.playerSprite.currentFacing != 'down' or None:
+                self.playerSprite.shootSound()
                 self.playerbullets.add(Bullet([self.spriteGroupAll, self.playerbullets], self.playerSprite.rect.centerx, self.playerSprite.rect.centery,
-                                              7, (BULLETSIZE, BULLETSIZE), 'plant', self.playerSprite.currentFacing))
+                                              7, (BULLETSIZE, BULLETSIZE), 'player', self.playerSprite.currentFacing))
 
-                self.lastUpdateShooting = currentTime
+                self.lastUpdateShootingPlayer = currentTime
+
+    def bossShooting(self):
+        currentTime = pygame.time.get_ticks()
+        if self.timeTotal % 2 != 0:
+            if currentTime - self.lastUpdateShootingBoss > 450:
+                x = randint(0, 1)
+                if x:
+                    direction = 'rigth'
+                    startPos = -64
+                else:
+                    direction = 'left'
+                    startPos = SCREENWIDTH + 64
+                self.bullets.add(Bullet([self.spriteGroupAll, self.bullets], startPos, (64/2)*randint(14, 24),
+                                        10, (BULLETSIZE, BULLETSIZE), 'boss', direction))
+                # self.bullets.add(Bullet([self.spriteGroupAll, self.bullets], startPos, (64/2)*randint(7, 12),
+                #                         10, (BULLETSIZE, BULLETSIZE), 'boss', direction))
+                self.lastUpdateShootingBoss = currentTime
+        if self.timeTotal % 2 == 0:
+            if currentTime - self.lastUpdateShootingBoss > 450:
+                x = randint(0, 1)
+                if x:
+                    direction = 'down'
+                    startPos = -64
+                else:
+                    direction = 'up'
+                    startPos = SCREENHEIGHT + 64
+                self.bullets.add(Bullet([self.spriteGroupAll, self.bullets],  (64/2)*randint(14, 34), startPos,
+                                        10, (BULLETSIZE, BULLETSIZE), 'boss', direction))
+                self.lastUpdateShootingBoss = currentTime
+
+    def check_bullet_bounds(self, screenWidth):
+        for bullet in self.bullets:
+            if bullet.rect.right < -128 or bullet.rect.left > screenWidth+128:
+                bullet.kill()
+                self.scoreTotal += 5
 
     def horizontal_movement_colission(self):
         player = self.player.sprite
@@ -142,14 +223,14 @@ class Level:
                     player.onGround = True
                     player.jumpCount = 0
                     if plataforma.isTrap == True:
-                        if plataforma.trapOn == False:
-                            plataforma.trapOn = True
+                        plataforma.trapOn = True
                         if plataforma.currentFrame > 2:
                             currentTime = pygame.time.get_ticks()
-                            self.playerSprite.getHit()
-                            if currentTime - self.lastUpdateVidas > ANIMATIONSPEED*4:
-                                self.counter.updateLives()
-                                self.lastUpdateVidas = currentTime
+                            if currentTime - self.lastUpdateLife > ANIMATIONSPEED*3:
+                                plataforma.trapOn = False
+                                self.lastUpdateLife = currentTime
+                                plataforma.trapSound()
+                                self.playerSprite.getHit()
                 elif player.direction.y < 0:
                     player.rect.top = plataforma.rect.bottom
                     player.direction.y = 0
@@ -161,11 +242,14 @@ class Level:
                 if enemy.direction.y > 0:
                     enemy.rect.bottom = plataforma.rect.top
                     enemy.direction.y = 0
-                    enemy.randDirection()
+                    if enemy.firstTimeFalling:
+                        enemy.randDirection()
+                        enemy.firstTimeFalling = False
 
     def horizontal_movement_colission_enemies(self, enemy):
-        enemy.rect.x += enemy.direction.x
-
+        # MUEVO AL BICHO
+        enemy.move()
+        # chequeo colisiones horizontales
         for plataforma in self.plataformas:
             if plataforma.rect.colliderect(enemy.rect):
                 if enemy.direction.x < 0:
@@ -177,14 +261,30 @@ class Level:
                     enemy.direction.x = -ENEMYVELOCITY
                     enemy.currentFacing = 'left'
 
+    def playerGetHitted(self):
+        self.playerSprite.getHit()
+        self.playerGotHitted = True
+
+    def addLife(self):
+        self.playerpickedLife = True
+        self.playerSprite.liveUpSound()
+        if self.playerSprite.lives < 3:
+
+            self.playerSprite.lives += 1
+
     def timer(self):
         currentTime = pygame.time.get_ticks()
         if currentTime - self.gameTime > 1000:
             self.timeTotal -= 1
             self.gameTime = currentTime
+            if self.playerpickedLife:
+                self.playerpickedLife = False
+            if self.playerGotHitted:
+                self.playerGotHitted = False
 
     def run(self):
         self.timer()
+        self.counter.updateLivesPlayer(self.playerSprite.lives)
         drawBackground(self.screen, self.background)
         self.counter.update(self.scoreTotal, self.timeTotal)
         self.enemyShoots()
@@ -193,19 +293,30 @@ class Level:
         self.vertical_movement_colission()
         self.horizontal_movement_colission()
 
+        if self.bossSprite:
+            self.bossShooting()
+            self.check_bullet_bounds(SCREENWIDTH)
+            if self.timeTotal < self.timeForLife:
+                self.spawnLife()
+
         if self.playerSprite.shoot == True:
             self.playerShoots()
 
         if self.playerSprite.isKilled or self.timeTotal == 0:
             self.levelDone = True
 
-        if len(self.enemies) < 1 and len(self.movingEnemies) < 1:
+        if len(self.enemies) < 1 and len(self.movingEnemies) < 1 and len(self.boss) == 0:
             self.respawnEnemies()
+
+        if pygame.sprite.spritecollide(self.playerSprite, self.life, True):
+            if self.playerpickedLife == False:
+                self.addLife()
 
         for enemy in self.enemies:
             self.vertical_movement_colission_enemies(enemy)
 
             if self.playerSprite.attacking_rect.colliderect(enemy):
+                enemy.dyingSound()
                 enemy.kill()
 
             colisionTrue = pygame.sprite.collide_mask(
@@ -213,20 +324,19 @@ class Level:
             if colisionTrue:
 
                 if self.playerSprite.isAttacking == True:
+                    enemy.dyingSound()
                     enemy.kill()
                     self.scoreTotal += enemy.pointsToAdd
                 else:
-                    currentTime = pygame.time.get_ticks()
-                    if currentTime - self.lastUpdateVidas > ANIMATIONSPEED*4:
-                        self.playerSprite.getHit()
-                        self.counter.updateLives()
-                        self.lastUpdateVidas = currentTime
+                    if self.playerGotHitted == False:
+                        self.playerGetHitted()
 
         for enemy in self.movingEnemies:
             self.vertical_movement_colission_enemies(enemy)
             self.horizontal_movement_colission_enemies(enemy)
 
             if self.playerSprite.attacking_rect.colliderect(enemy) and self.playerSprite.isAttacking == True:
+                enemy.dyingSound()
                 enemy.kill()
 
             colisionTrue = pygame.sprite.collide_mask(
@@ -234,19 +344,17 @@ class Level:
             if colisionTrue:
 
                 if self.playerSprite.isAttacking == True:
+                    enemy.dyingSound()
                     enemy.kill()
                     self.scoreTotal += enemy.pointsToAdd
                 else:
-                    currentTime = pygame.time.get_ticks()
-                    if currentTime - self.lastUpdateVidas > ANIMATIONSPEED*4:
-                        self.playerSprite.getHit()
-                        self.counter.updateLives()
-                        enemy.kill()
-                        self.lastUpdateVidas = currentTime
+                    if self.playerGotHitted == False:
+                        self.playerGetHitted()
 
         for point in self.points:
             if pygame.sprite.collide_mask(self.playerSprite, point):
                 self.scoreTotal += point.pointsToAdd
+                point.addPointSound()
                 point.kill()
 
         if len(self.playerbullets) > 0:
@@ -264,6 +372,7 @@ class Level:
                         if stateCollision:
                             bullet.isKilled = True
                             self.scoreTotal += enemy.pointsToAdd
+                            enemy.dyingSound()
                             enemy.kill()
                 if len(self.movingEnemies) > 0:
                     for enemy in self.movingEnemies:
@@ -273,29 +382,19 @@ class Level:
                         if stateCollision2:
                             bullet.isKilled = True
                             self.scoreTotal += enemy.pointsToAdd
+                            enemy.dyingSound()
                             enemy.kill()
 
         if len(self.bullets) > 0:
             for bullet in self.bullets:
                 if pygame.sprite.collide_mask(self.playerSprite, bullet):
                     if bullet.isKilled == False:
-                        print(self.playerSprite.lives)
-                        self.playerSprite.getHit()
-                        self.counter.updateLives()
+
+                        if self.playerGotHitted == False:
+                            self.playerGetHitted()
                         bullet.isKilled = True
 
-                if pygame.sprite.spritecollideany(
-                        bullet, self.plataformas):
-                    bullet.isKilled = True
-
-
-# ALTERNATIVA SIN USAR DOBLE FOR PERO NO PODRIA HACER EL DOKILL  ANIMADO
-        # if len(self.playerbullets) > 0:
-        #     stateCollision = pygame.sprite.groupcollide(
-        #         self.playerbullets, self.enemies, True, True)
-        #     stateCollision2 = pygame.sprite.groupcollide(
-        #         self.playerbullets, self.movingEnemies, True, True)
-        #     if stateCollision:
-        #         self.scoreTotal += enemy.pointsToAdd
-        #     if stateCollision2:
-        #         self.scoreTotal += enemy.pointsToAdd
+                if self.bossSprite == None:
+                    if pygame.sprite.spritecollideany(
+                            bullet, self.plataformas):
+                        bullet.isKilled = True

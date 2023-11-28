@@ -1,3 +1,4 @@
+import os
 import pygame
 
 from colors import *
@@ -13,11 +14,13 @@ class Text:
         self.color = color
         self.fontSize = fontSize
         self.fontFamily = fontFamily
-        self.font = pygame.font.Font('assets/fonts/PixelifySans-VariableFont_wght.ttf',self.fontSize)
+        self.font = pygame.font.Font(os.path.join(
+            'assets', 'fonts', 'PixelifySans-VariableFont_wght.ttf'), self.fontSize)
         self.anitalisaing = anitalisaing
 
     def setFontSize(self, size=20):
-        self.font = pygame.font.Font('assets/fonts/PixelifySans-VariableFont_wght.ttf',size)
+        self.font = pygame.font.Font(os.path.join(
+            'assets', 'fonts', 'PixelifySans-VariableFont_wght.ttf'), size)
 
     def setText(self, text):
         self.text = text

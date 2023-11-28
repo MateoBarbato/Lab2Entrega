@@ -1,6 +1,6 @@
 from random import randint
 import pygame
-from Config import FRUIT1SHEET, FRUIT2SHEET, FRUIT3SHEET, SPRITEBUGSIZE
+from Config import ADDPOINT, FRUIT1SHEET, FRUIT2SHEET, FRUIT3SHEET, SPRITEBUGSIZE
 
 from spriteSheet import loadSprites
 
@@ -25,11 +25,15 @@ class Point(pygame.sprite.Sprite):
         self.lastUpdate = pygame.time.get_ticks()
         self.animationSpeed = 250
         self.ammountOfFrames = 4
+        self.pointSound = ADDPOINT
 
     def setImage(self, image):
         self.image = pygame.transform.scale(
             image, (self.size/1.5, self.size/1.5))
         return self.image
+
+    def addPointSound(self):
+        self.pointSound.play()
 
     def randoType(self):
         self.randInt = randint(0, 2)
@@ -46,7 +50,7 @@ class Point(pygame.sprite.Sprite):
             self.type = 'blue'
             self.pointsToAdd = 35
 
-    def animateDirection(self):
+    def animate(self):
         currentTime = pygame.time.get_ticks()
         if currentTime - self.lastUpdate > self.animationSpeed:
             self.setImage(
@@ -60,4 +64,4 @@ class Point(pygame.sprite.Sprite):
         if self.isKilled:
             # hacer algo
             self.kill()
-        self.animateDirection()
+        self.animate()

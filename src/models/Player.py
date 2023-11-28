@@ -36,11 +36,8 @@ class Player(pygame.sprite.Sprite):
         # self.Attackcooldown = 300
         # self.rect.center = (self.x, self.y)
         self.mask = pygame.mask.from_surface(self.image)
-
         self.screen = screen
         self.lastUpdate = pygame.time.get_ticks()
-        self.lastUpdateVidas = pygame.time.get_ticks()
-
         # PLAYER MOVEMENT
         self.direction = pygame.math.Vector2(0, 0)
         self.falling = True
@@ -50,8 +47,8 @@ class Player(pygame.sprite.Sprite):
         self.jumping = False
         self.gravity = 0.72
         self.jump_speed = -16.8
-        # self.gravity = 0.1
-        # self.jump_speed = -6.5
+        self.damageSound = DAMAGEPLAYER
+        self.dyingSound = DYINGPLAYER
         self.onGround = True
         self.jumpCount = 0
         self.isKilled = False
@@ -59,6 +56,8 @@ class Player(pygame.sprite.Sprite):
         self.isAttacking = False
         self.attacking_rect = pygame.Rect(
             self.rect.left, self.rect.top, PLAYERWIDTH, PLAYERHEIGHT)
+        self.liveUp = LIVEUP
+        self.Shoot = SHOOT
 
     def setPlayerSpeed(self, speed=1.5):
         self.speedX = speed
@@ -67,14 +66,20 @@ class Player(pygame.sprite.Sprite):
         image = pygame.transform.scale(image, (self.width, self.height))
         return image
 
+    def liveUpSound(self):
+        self.liveUp.play()
+
+    def shootSound(self):
+        self.Shoot.play()
+
     def getHit(self):
-        currentTime = pygame.time.get_ticks()
+
         if self.lives > 1:
-            if currentTime - self.lastUpdateVidas > ANIMATIONSPEED*5:
-                self.lives -= 1
-                self.lastUpdateVidas = currentTime
+            self.lives -= 1
+            self.damageSound.play()
         else:
             self.isKilled = True
+            self.dyingSound.play()
 
     def animateDirection(self, key: str):
         currentTime = pygame.time.get_ticks()

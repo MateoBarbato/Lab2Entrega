@@ -1,5 +1,6 @@
+import os
 import pygame
-
+pygame.mixer.init()
 
 SCREENHEIGHT = 800
 SCREENWIDTH = 1200
@@ -32,7 +33,7 @@ JUMPMAXHEIGH = -220
 
 def loadImage(image: str):
     try:
-        imgToLoad = pygame.image.load(f'assets/{image}')
+        imgToLoad = pygame.image.load(os.path.join('assets', 'images', image))
         return imgToLoad
     except FileNotFoundError as e:
         errMsg(e)
@@ -43,10 +44,21 @@ def loadImage(image: str):
 
 def loadBackground(image: str = 'fondoMarDia.png', scale=(SCREENWIDTH, SCREENHEIGHT)):
     try:
-        background = pygame.image.load(f'assets/{image}')
+        background = pygame.image.load(os.path.join('assets', 'images', image))
         background = pygame.transform.scale(
             background, scale)
         return background
+    except FileNotFoundError as e:
+        errMsg(e)
+        errMsg('Error loading the backgorund, exiting...')
+        exit()
+
+
+def loadSound(sound: str):
+    try:
+        soundLoaded = pygame.mixer.Sound(
+            os.path.join('assets', 'audio', sound))
+        return soundLoaded
     except FileNotFoundError as e:
         errMsg(e)
         errMsg('Error loading the backgorund, exiting...')
@@ -77,7 +89,20 @@ PLAYERSHEET = loadImage('LucasSprite.png')
 PLAYERSHEETATTACK = loadImage('LucasSpritewithAttack.png')
 BULLETPLANT = loadImage('plantBullet.png')
 BULLETWATER = loadImage('waterBullet.png')
+BULLETPLAYER = loadImage('playerbullet.png')
+BULLETBOSS = loadImage('bossbullet.png')
 FRUIT1SHEET = loadImage('point1.png')
 FRUIT2SHEET = loadImage('point2.png')
 FRUIT3SHEET = loadImage('point3.png')
+VIDAPOINT = loadImage('vidaPoint.png')
 CORAZON = loadImage('vida.png')
+BOOSSHEET = loadImage('lugia.png')
+DAMAGEPLAYER = loadSound('damage.wav')
+DYINGPLAYER = loadSound('dyingPlayer.wav')
+LIVEUP = loadSound('liveUp2sec.wav')
+SHOOT = loadSound('plantShoot.wav')
+TRAPSPIKES = loadSound('trapSpikes.wav')
+ADDPOINT = loadSound('point.wav')
+DAMAGEENEMY = loadSound('damageEnemy.wav')
+MUSICMENU = loadSound('musicaMenus.mp3')
+GAMEMUSIC = loadSound('musicLevel.mp3')
