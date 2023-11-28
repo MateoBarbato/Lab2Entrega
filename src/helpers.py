@@ -286,22 +286,23 @@ def levelSelector(screen, dataStars):
 
     drawBackground(screen, BRACKGROUNDGRASS)
     drawBackground(screen, BRACKGROUNDTREES)
-
+    ButtonHeight = 90
+    ButtonWidth = 130
     ButtonCross = Button(40, 40, 150, 120,
                          'X', screen, colorbackground=LAVENDER, fontSize=20)
     # -------------------------------------------------------------------------
-    Level1 = Button(120, 120, SCREENWIDTH/3 - 80,
-                    SCREENHEIGHT/2.5, 'Level 1', screen)
+    Level1 = Button(ButtonWidth, ButtonHeight, SCREENWIDTH/3 - 80,
+                    SCREENHEIGHT/2.5, 'Level 1', screen, GREENMENU, WHITE)
     Text(f'{dataStars["1"]}/3 Stars', YELLOW, 24, False).blitText(
         screen, (SCREENWIDTH/3 - 80, (SCREENHEIGHT/2.5)+70), None)
     # -------------------------------------------------------------------------
-    Level2 = Button(120, 120, SCREENWIDTH/2,
-                    SCREENHEIGHT/2.5, 'Level 2', screen)
+    Level2 = Button(ButtonWidth, ButtonHeight, SCREENWIDTH/2,
+                    SCREENHEIGHT/2.5, 'Level 2', screen, GREENMENU, WHITE)
     Text(f'{dataStars["2"]}/3 Stars', YELLOW, 24, False).blitText(
         screen, (SCREENWIDTH/2, (SCREENHEIGHT/2.5)+70), None)
     # -------------------------------------------------------------------------
-    Level3 = Button(120, 120, SCREENWIDTH - SCREENWIDTH/3 + 80,
-                    SCREENHEIGHT / 2.5, 'Level 3', screen)
+    Level3 = Button(ButtonWidth, ButtonHeight, SCREENWIDTH - SCREENWIDTH/3 + 80,
+                    SCREENHEIGHT / 2.5, 'Level 3', screen, GREENMENU, WHITE)
     Text(f'{dataStars["3"]}/3 Stars', YELLOW, 24, False).blitText(
         screen, (SCREENWIDTH - SCREENWIDTH/3 + 80, (SCREENHEIGHT/2.5)+70), None)
     # -------------------------------------------------------------------------
